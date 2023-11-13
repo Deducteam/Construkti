@@ -14,10 +14,10 @@ symbol neg_i (p : Prop) : (Prf p → Prf ⊥) → Prf (¬ p);
 symbol neg_e (p : Prop) : Prf (¬ p) → Prf p → Prf ⊥;
 symbol top_i : Prf ⊤;
 symbol bot_e : Prf ⊥ → Π p : Prop, Prf p;
-symbol fa_i [a : Set] (p : El a → Prop) : (Π x : El a, Prf (p x)) → Prf (∀ (λ x, p x));
-symbol fa_e [a : Set] (p : El a → Prop) : Prf (∀ (λ x, p x)) → Π x : El a, Prf (p x);
-symbol ex_i [a : Set] (p : El a → Prop) : Π t : El a, Prf (p t) → Prf (∃ (λ x, p x));
-symbol ex_e [a : Set] (p : El a → Prop) : Prf (∃ (λ x, p x)) → Π r : Prop, (Π x : El a, Prf (p x) → Prf r) → Prf r;
+symbol fa_i [a : Set] (p : El a → Prop) : (Π x : El a, Prf (p x)) → Prf (∀ p);
+symbol fa_e [a : Set] (p : El a → Prop) : Prf (∀ p) → Π x : El a, Prf (p x);
+symbol ex_i [a : Set] (p : El a → Prop) : Π t : El a, Prf (p t) → Prf (∃ p);
+symbol ex_e [a : Set] (p : El a → Prop) : Prf (∃ p) → Π r : Prop, (Π x : El a, Prf (p x) → Prf r) → Prf r;
 
 symbol absurd (p : Prop) : Prf (¬ p ⇒ ⊥) → Prf p; // Classical deduction rule
 

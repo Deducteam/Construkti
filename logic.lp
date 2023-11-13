@@ -37,8 +37,8 @@ constant symbol ⊥ : Prop;
 constant symbol ∀ [a : Set] : (El a → Prop) → Prop; notation ∀ quantifier;
 rule Prf (∀ $p) ↪ Π x, Prf ($p x);
 
-constant symbol ∃ [a : Set] : (El a → Prop) → Prop; notation ∃ quantifier;
-rule Prf (∃ $p) ↪ Π r, (Π x, Prf ($p x) → Prf r) → Prf r;
+constant symbol ∃ [a : Set] : (El a → Prop) → Prop; //notation ∃ quantifier;
+//rule Prf (∃ $p) ↪ Π r, (Π x, Prf ($p x) → Prf r) → Prf r;
 
 symbol ¬ : Prop → Prop; notation ¬ prefix 40;
 rule ¬ $p ↪ $p ⇒ ⊥;

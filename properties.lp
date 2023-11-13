@@ -135,24 +135,66 @@ end;
 
 opaque symbol prop_neg_fa (a : Set) (p : El a → Prop) : Prf (¬ ¬ ∀ p ⇒ ∀ (λ x, ¬ ¬ (p x))) ≔ 
 begin
-admitted;
+    assume a p pNNP;
+    refine fa_i (λ x, ¬ ¬ (p x)) _;
+    assume x;
+    refine neg_i (¬ (p x)) _;
+    assume pNP;
+    refine neg_e (¬ (∀ p)) _ _ 
+    {refine pNNP}
+    {refine neg_i (∀ p) _;
+    assume pP;
+    refine neg_e (p x) _ _ 
+    {refine pNP}
+    {apply fa_e  p pP x}}
+end;
 
 opaque symbol prop_neg_ex1 (a : Set) (p : El a → Prop) : Prf (¬ ∃ p ⇒ ∀ (λ x, ¬ (p x))) ≔ 
 begin
-admitted;
+    assume a p pNP;
+    refine fa_i (λ x, ¬ (p x)) _;
+    assume x;
+    refine neg_i (p x) _;
+    assume pP;
+    refine neg_e (∃ p) _ _ 
+    {refine pNP}
+    {refine ex_i p x pP}
+end;
 
 opaque symbol prop_neg_ex2 (a : Set) (p : El a → Prop) : Prf (∀ (λ x, ¬ (p x)) ⇒ ¬ ∃ p ) ≔ 
 begin
-admitted;
+    assume a p pNP;
+    refine neg_i (∃ p) _;
+    assume pP;
+    refine ex_e p pP ⊥ _;
+    assume t pPt;
+    refine neg_e (p t) _ _ 
+    {refine fa_e (λ x, ¬ (p x)) pNP t}
+    {refine pPt}
+end;
 
 opaque symbol prop_triple_neg (p : Prop) : Prf (¬ ¬ ¬ p ⇒ ¬ p) ≔ 
 begin
-admitted;
+    assume p pNNNP;
+    refine neg_i p _;
+    assume pP;
+    refine neg_e (¬ ¬ p) _ _ 
+    {refine pNNNP}
+    {refine prop_double_neg p pP}
+end;
 
 opaque symbol prop_neg_bot : Prf (¬ ¬ ⊥ ⇒ ⊥) ≔ 
 begin
-admitted;
+    assume pB;
+    refine neg_e (¬ ⊥) _ _ 
+    {refine pB}
+    {refine neg_i ⊥ _;
+    assume pN; 
+    refine pN}
+end;
 
 opaque symbol prop_neg_top : Prf (¬ ¬ ⊤ ⇒ ⊤) ≔ 
 begin
-admitted;
+    assume pT;
+    refine top_i
+end;
