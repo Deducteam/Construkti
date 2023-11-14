@@ -1,9 +1,19 @@
 # Double negation translation for higher-order Lambdapi proofs
 
+This tool applies Kuroda's negative translation to Lambapi proofs written using natural deduction.
+
+## Requirements
+
 The input proofs require to only use the connectors and quantifiers presented in `logic.lp`, and the natural deduction rules presented in `deduction.lp`. 
 
-`rules.lp` defines few rewrite rules that simplify the proofs. 
+## How to use it?
 
-`kuroda_rules.lp` defines Kuroda's translation, i.e. the insertion of double negation before each formula and after each universal quantifier. Kuroda's translation relies on some properties, proved in `properties_rules.lp`. Both files make use of `rules.lp`.
+If you want to translate the proofs of `file.lp`, run `bash translate.sh file`.
+
+You can test it on the file `test`.
+
+## How it works?
+
+`kuroda_rules.lp` defines Kuroda's translation, i.e. the insertion of double negation before each formula and after each universal quantifier. Kuroda's translation relies on some properties, proved in `properties_rules.lp`. Both files make use of `rules.lp`, which defines few rewrit rules that simplify the proofs.
 
 `example.lp` presents few examples of proofs with their translation.
