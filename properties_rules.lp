@@ -1,15 +1,12 @@
 require open Logic.Construkti.logic;
 require open Logic.Construkti.deduction;
+require open Logic.Construkti.rules;
 
 // Some results
 
 opaque symbol prop_double_neg (p : Prop) : Prf (p ⇒ ¬ ¬ p) ≔ 
 begin
-    assume p;
-    refine imp_i p (¬ ¬ p) _;
-    assume pP;
-    refine neg_i (¬ p) _;
-    assume pNP;
+    assume p pP pNP;
     refine neg_e p _ _ 
     {refine pNP}
     {refine pP}
@@ -17,16 +14,12 @@ end;
 
 opaque symbol prop_neg_imp (p q : Prop) : Prf ((p ⇒ q) ⇒ (¬ q ⇒ ¬ p)) ≔ 
 begin
-    assume p q;
-    refine imp_i (p ⇒ q) (¬ q ⇒ ¬ p) _;
-    assume pPQ;
-    refine imp_i (¬ q) (¬ p) _;
-    assume pNQ;
+    assume p q pPQ pNQ;
     refine neg_i p _;
     assume pP;
     refine neg_e q _ _ 
     {refine pNQ}
-    {apply (imp_e p q pPQ) pP}
+    {apply pPQ pP}
 end;
 
 opaque symbol prop_neg_imp1 (p q : Prop) : Prf ((¬ ¬ p ⇒ ¬ ¬ q) ⇒ ¬ ¬ (p ⇒ q)) ≔ 

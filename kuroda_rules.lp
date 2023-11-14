@@ -1,6 +1,6 @@
 require open Logic.Construkti.logic;
 require open Logic.Construkti.deduction;
-require open Logic.Construkti.properties;
+require open Logic.Construkti.properties_rules;
 
 
 // Classical connectives and quantifiers
