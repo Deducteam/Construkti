@@ -16,13 +16,15 @@ rule @∀_c $a $p ↪ @∀ $a (λ x : El $a, ¬ ¬ ($p x));
 
 opaque symbol imp_i_c (p q : Prop) : (Prf_c p → Prf_c q) → Prf_c (p ⇒ q) ≔ 
 begin
-    assume p q; assume pPQ;
+    assume p q;
+    assume pPQ;
     refine prop_neg_imp1 p q pPQ;
 end;
 
 opaque symbol imp_e_c (p q : Prop) : Prf_c (p ⇒ q) → (Prf_c p → Prf_c q) ≔ 
 begin
-    assume p q; assume pPQ;
+    assume p q;
+    assume pPQ;
     refine prop_neg_imp2 p q pPQ;
 end;
 
@@ -49,7 +51,8 @@ end;
 
 opaque symbol or_i_l_c (p : Prop) : Prf_c p → Π q : Prop, Prf_c (p ∨ q) ≔
 begin
-    assume p pP q; assume pPQ;
+    assume p pP q;
+    assume pPQ;
     refine neg_e (¬ p) _ _ 
     {refine pP}
     {refine and_e_l (¬ p) (¬ q) _;
@@ -58,7 +61,8 @@ end;
 
 opaque symbol or_i_r_c (q : Prop) : Prf_c q → Π p : Prop, Prf_c (p ∨ q) ≔
 begin
-    assume q pQ p; assume pPQ;
+    assume q pQ p;
+    assume pPQ;
     refine neg_e (¬ q) _ _ 
     {refine pQ}
     {refine and_e_r (¬ p) (¬ q) _;
@@ -67,7 +71,8 @@ end;
 
 opaque symbol or_e_c (p q : Prop) : Prf_c (p ∨ q) → Π r : Prop, (Prf_c p → Prf_c r) → (Prf_c q → Prf_c r) → Prf_c r ≔
 begin
-    assume p q pPQ r pPR pQR; assume pR;
+    assume p q pPQ r pPR pQR;
+    assume pR;
     refine neg_e (¬ (¬ p ∧ ¬ q)) _ _ 
     {refine prop_neg_and1 (¬ p) (¬ q) _;
     refine and_i (¬ ¬ ¬ p) (¬ ¬ ¬ q) _ _ 

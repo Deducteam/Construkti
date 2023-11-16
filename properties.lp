@@ -31,27 +31,35 @@ end;
 
 opaque symbol prop_neg_imp1 (p q : Prop) : Prf ((¬ ¬ p ⇒ ¬ ¬ q) ⇒ ¬ ¬ (p ⇒ q)) ≔ 
 begin
-    assume p q pPQ;
+    assume p q;
+    refine imp_i (¬ ¬ p ⇒ ¬ ¬ q) (¬ ¬ (p ⇒ q)) _;
+    assume pPQ;
     refine neg_i (¬ (p ⇒ q)) _;
     assume pNPQ;
     refine neg_e (p ⇒ q) _ _ 
     {refine pNPQ}
-    {assume pP;
+    {refine imp_i p q _;
+    assume pP;
     refine bot_e _ q;
     refine neg_e (¬ q) _ _ 
-    {refine pPQ _;
-    refine prop_double_neg p pP}
+    {refine imp_e (¬ ¬ p) (¬ ¬ q) pPQ _;
+    refine imp_e p (¬ ¬ p) (prop_double_neg p) pP}
     {refine neg_i q _;
     assume pQ;
     refine neg_e (p ⇒ q) _ _ 
     {refine pNPQ}
-    {assume pP2;
+    {refine imp_i p q _;
+    assume pP2;
     apply pQ}}}
 end;
 
 opaque symbol prop_neg_imp2 (p q : Prop) : Prf (¬ ¬ (p ⇒ q) ⇒ (¬ ¬ p ⇒ ¬ ¬ q)) ≔ 
 begin
-    assume p q pNNPQ pNNP;
+    assume p q;
+    refine imp_i (¬ ¬ (p ⇒ q)) (¬ ¬ p ⇒ ¬ ¬ q) _;
+    assume pNNPQ;
+    refine imp_i (¬ ¬ p) (¬ ¬ q) _;
+    assume pNNP;
     refine neg_i (¬ q) _;
     assume pNQ;
     refine neg_e (¬ (p ⇒ q)) _ _ 
@@ -64,12 +72,14 @@ begin
     assume pP;
     refine neg_e q _ _ 
     {refine pNQ}
-    {apply pPQ pP}}}
+    {apply imp_e p q pPQ pP}}}
 end;
 
 opaque symbol prop_neg_and1 (p q : Prop) : Prf ((¬ ¬ p ∧ ¬ ¬ q) ⇒ ¬ ¬ (p ∧ q)) ≔ 
 begin
-    assume p q pNNPQ;
+    assume p q;
+    refine imp_i (¬ ¬ p ∧ ¬ ¬ q) (¬ ¬ (p ∧ q)) _;
+    assume pNNPQ;
     refine neg_i (¬ (p ∧ q)) _;
     assume pNPQ;
     refine neg_e (¬ q) _ _
@@ -87,7 +97,9 @@ end;
 
 opaque symbol prop_neg_and2 (p q : Prop) : Prf (¬ ¬ (p ∧ q) ⇒ (¬ ¬ p ∧ ¬ ¬ q)) ≔ 
 begin
-    assume p q pNNPQ;
+    assume p q; 
+    refine imp_i (¬ ¬ (p ∧ q)) (¬ ¬ p ∧ ¬ ¬ q) _;
+    assume pNNPQ;
     refine and_i (¬ ¬ p) (¬ ¬ q) _ _
     {refine neg_i (¬ p) _;
     assume pNP;
@@ -111,7 +123,9 @@ end;
 
 opaque symbol prop_neg_or1 (p q : Prop) : Prf (¬ (p ∨ q) ⇒ (¬ p ∧ ¬ q)) ≔ 
 begin
-    assume p q pNPQ;
+    assume p q;
+    refine imp_i (¬ (p ∨ q)) (¬ p ∧ ¬ q) _;
+    assume pNPQ;
     refine and_i (¬ p) (¬ q) _ _
     {refine neg_i p _;
     assume pP;
@@ -127,21 +141,25 @@ end;
 
 opaque symbol prop_neg_or2 (p q : Prop) : Prf ((¬ p ∧ ¬ q) ⇒ ¬ (p ∨ q)) ≔ 
 begin
-    assume p q pNPQ;
+    assume p q;
+    refine imp_i (¬ p ∧ ¬ q) (¬ (p ∨ q)) _;
+    assume pNPQ;
     refine neg_i (p ∨ q) _;
     assume pPQ;
     refine or_e p q pPQ ⊥ _ _ 
     {assume pP;
-    refine neg_i p _ pP;
+    refine neg_e p _ pP;
     refine and_e_l (¬ p) (¬ q) pNPQ}
     {assume pQ;
-    refine neg_i q _ pQ;
+    refine neg_e q _ pQ;
     refine and_e_r (¬ p) (¬ q) pNPQ}
 end;
 
 opaque symbol prop_neg_fa (a : Set) (p : El a → Prop) : Prf (¬ ¬ ∀ p ⇒ ∀ (λ x, ¬ ¬ (p x))) ≔ 
 begin
-    assume a p pNNP;
+    assume a p;
+    refine imp_i (¬ ¬ ∀ p) (∀ (λ x, ¬ ¬ (p x))) _;
+    assume pNNP;
     refine fa_i (λ x, ¬ ¬ (p x)) _;
     assume x;
     refine neg_i (¬ (p x)) _;
@@ -157,7 +175,9 @@ end;
 
 opaque symbol prop_neg_ex1 (a : Set) (p : El a → Prop) : Prf (¬ ∃ p ⇒ ∀ (λ x, ¬ (p x))) ≔ 
 begin
-    assume a p pNP;
+    assume a p;
+    refine imp_i (¬ ∃ p) (∀ (λ x, ¬ (p x))) _;
+    assume pNP;
     refine fa_i (λ x, ¬ (p x)) _;
     assume x;
     refine neg_i (p x) _;
@@ -167,9 +187,11 @@ begin
     {refine ex_i p x pP}
 end;
 
-opaque symbol prop_neg_ex2 (a : Set) (p : El a → Prop) : Prf (∀ (λ x, ¬ (p x)) ⇒ ¬ ∃ p ) ≔ 
+opaque symbol prop_neg_ex2 (a : Set) (p : El a → Prop) : Prf (∀ (λ x, ¬ (p x)) ⇒ ¬ ∃ p) ≔ 
 begin
-    assume a p pNP;
+    assume a p;
+    refine imp_i (∀ (λ x, ¬ (p x))) (¬ ∃ p) _;
+    assume pNP;
     refine neg_i (∃ p) _;
     assume pP;
     refine ex_e p pP ⊥ _;
@@ -181,16 +203,19 @@ end;
 
 opaque symbol prop_triple_neg (p : Prop) : Prf (¬ ¬ ¬ p ⇒ ¬ p) ≔ 
 begin
-    assume p pNNNP;
+    assume p;
+    refine imp_i (¬ ¬ ¬ p) (¬ p) _;
+    assume pNNNP;
     refine neg_i p _;
     assume pP;
     refine neg_e (¬ ¬ p) _ _ 
     {refine pNNNP}
-    {refine prop_double_neg p pP}
+    {refine imp_e p (¬ ¬ p) (prop_double_neg p) pP}
 end;
 
 opaque symbol prop_neg_bot : Prf (¬ ¬ ⊥ ⇒ ⊥) ≔ 
 begin
+    refine imp_i (¬ ¬ ⊥) ⊥ _;
     assume pB;
     refine neg_e (¬ ⊥) _ _ 
     {refine pB}
@@ -201,6 +226,7 @@ end;
 
 opaque symbol prop_neg_top : Prf (¬ ¬ ⊤ ⇒ ⊤) ≔ 
 begin
+    refine imp_i (¬ ¬ ⊤) ⊤ _;
     assume pT;
     refine top_i
 end;

@@ -125,10 +125,10 @@ begin
     assume pPQ;
     refine or_e p q pPQ ⊥ _ _ 
     {assume pP;
-    refine neg_i p _ pP;
+    refine neg_e p _ pP;
     refine and_e_l (¬ p) (¬ q) pNPQ}
     {assume pQ;
-    refine neg_i q _ pQ;
+    refine neg_e q _ pQ;
     refine and_e_r (¬ p) (¬ q) pNPQ}
 end;
 
@@ -160,7 +160,7 @@ begin
     {refine ex_i p x pP}
 end;
 
-opaque symbol prop_neg_ex2 (a : Set) (p : El a → Prop) : Prf (∀ (λ x, ¬ (p x)) ⇒ ¬ ∃ p ) ≔ 
+opaque symbol prop_neg_ex2 (a : Set) (p : El a → Prop) : Prf (∀ (λ x, ¬ (p x)) ⇒ ¬ ∃ p) ≔ 
 begin
     assume a p pNP;
     refine neg_i (∃ p) _;

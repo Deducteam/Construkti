@@ -2,7 +2,7 @@
 
 cp $1.lp $1_c.lp
 
-sed -i '1s/^/require open Logic.Construkti.properties;\nrequire open Logic.Construkti.kuroda;\n/' $1_c.lp
+sed -i '1s/^/require open Logic.Construkti.properties_rules;\nrequire open Logic.Construkti.kuroda_rules;\n/' $1_c.lp
 
 sed -i 's/Prf/Prf_c/g' $1_c.lp
 sed -i 's/∀/∀_c/g' $1_c.lp
