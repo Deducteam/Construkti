@@ -39,7 +39,7 @@ begin
     apply and_e_r A B pAB}
 end;
 
-opaque symbol ex_4 : Prf (`∀ A, A ∨ ¬ A) ≔
+opaque symbol excluded_middle : Prf (`∀ A, A ∨ ¬ A) ≔
 begin
     refine fa_i (λ A, A ∨ ¬ A) _;
     assume A;
@@ -54,4 +54,19 @@ begin
     refine neg_e (A ∨ ¬ A) _ _ 
     {refine pANA}
     {refine or_i_l A pA (¬ A)}}
+end;
+
+opaque symbol double_neg_elim : Prf (`∀ A, ¬ ¬ A ⇒ A) ≔
+begin
+    refine fa_i (λ A, ¬ ¬ A ⇒ A) _;
+    assume A;
+    refine imp_i (¬ ¬ A) A _;
+    assume pNNA;
+    refine or_e A (¬ A) _ A _ _ 
+    {refine fa_e (λ x, x ∨ ¬ x) excluded_middle A}
+    {assume pA;
+    refine pA}
+    {assume pNA;
+    refine bot_e _ A;
+    refine neg_e (¬ A) pNNA pNA}
 end;
