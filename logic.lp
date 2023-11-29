@@ -31,3 +31,5 @@ constant symbol ∀ [a : Set] : (El a → Prop) → Prop; notation ∀ quantifie
 constant symbol ∃ [a : Set] : (El a → Prop) → Prop; notation ∃ quantifier;
 
 symbol ¬ : Prop → Prop; notation ¬ prefix 40;
+
+symbol ⇔ p q ≔ (p ⇒ q) ∧ (q ⇒ p); notation ⇔ infix right 5;

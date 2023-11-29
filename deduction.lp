@@ -33,4 +33,3 @@ symbol ex_e [a : Set] (p : El a → Prop) : Prf (∃ p) → Π r : Prop, (Π x :
 
 // Reductio ad absurdum (classical rule)
 symbol absurd (p : Prop) : Prf (¬ p ⇒ ⊥) → Prf p;
-
