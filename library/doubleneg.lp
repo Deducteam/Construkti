@@ -231,3 +231,16 @@ begin
     assume pT;
     refine top_i
 end;
+
+opaque symbol prop_neg_iff (p q : Prop) : Prf ((¬ ¬ p ⇔ ¬ ¬ q) ⇒ ¬ ¬ (p ⇔ q)) ≔ 
+begin
+    assume p q;
+    refine imp_i (¬ ¬ p ⇔ ¬ ¬ q) (¬ ¬ (p ⇔ q)) _;
+    assume pH;
+    refine imp_e (¬ ¬ (p ⇒ q) ∧ ¬ ¬ (q ⇒ p)) (¬ ¬ ((p ⇒ q) ∧ (q ⇒ p))) (prop_neg_and1 (p ⇒ q) (q ⇒ p)) _;
+    refine and_i (¬ ¬ (p ⇒ q)) (¬ ¬ (q ⇒ p)) _ _ 
+    {refine imp_e (¬ ¬ p ⇒ ¬ ¬ q) (¬ ¬ (p ⇒ q)) (prop_neg_imp1 p q) _;
+    refine and_e_l (¬ ¬ p ⇒ ¬ ¬ q) (¬ ¬ q ⇒ ¬ ¬ p) pH}
+    {refine imp_e (¬ ¬ q ⇒ ¬ ¬ p) (¬ ¬ (q ⇒ p)) (prop_neg_imp1 q p) _;
+    refine and_e_r (¬ ¬ p ⇒ ¬ ¬ q) (¬ ¬ q ⇒ ¬ ¬ p) pH}
+end;
