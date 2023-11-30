@@ -42,8 +42,8 @@ opaque symbol demorgan_or : Π (A B : Prop), Prf (¬ (A ∨ B) ⇔ ¬ A ∧ ¬ B
 begin
     assume A B;
     refine and_i (¬ (A ∨ B) ⇒ (¬ A ∧ ¬ B)) ((¬ A ∧ ¬ B) ⇒ ¬ (A ∨ B)) _ _ 
-    {refine prop_neg_or1 A B}
-    {refine prop_neg_or2 A B}
+    {refine neg_or1 A B}
+    {refine neg_or2 A B}
 end;
 
 
@@ -80,6 +80,6 @@ opaque symbol demorgan_ex : Π (a : Set), Π (p : El a → Prop), Prf (¬ ∃ p 
 begin
     assume a p;
     refine and_i (¬ ∃ p ⇒ ∀ (λ x, ¬ (p x))) ((∀ (λ x, ¬ (p x))) ⇒ ¬ ∃ p) _ _ 
-    {refine prop_neg_ex1 a p}
-    {refine prop_neg_ex2 a p}
+    {refine neg_ex1 a p}
+    {refine neg_ex2 a p}
 end;

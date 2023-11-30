@@ -4,7 +4,7 @@ cp $1.lp $1_c.lp
 
 sed -i '1s/^/require open Logic.Construkti.properties;\nrequire open Logic.Construkti.kuroda;\n/' $1_c.lp
 
-sed -i 's/Prf/Prf_c/g' $1_c.lp
+sed -i 's/Prf/Prf ¬ ¬/g' $1_c.lp
 sed -i 's/∀/∀_c/g' $1_c.lp
 sed -i 's/imp_i /imp_i_c /g' $1_c.lp
 sed -i 's/imp_e /imp_e_c /g' $1_c.lp
@@ -16,7 +16,7 @@ sed -i 's/or_i_l /or_i_l_c /g' $1_c.lp
 sed -i 's/or_e /or_e_c /g' $1_c.lp
 sed -i 's/neg_i /neg_i_c /g' $1_c.lp
 sed -i 's/neg_e /neg_e_c /g' $1_c.lp
-sed -i 's/top_i /top_i_c /g' $1_c.lp
+sed -i 's/top_i/top_i_c/g' $1_c.lp
 sed -i 's/bot_e /bot_e_c /g' $1_c.lp
 sed -i 's/fa_i /fa_i_c /g' $1_c.lp
 sed -i 's/fa_e /fa_e_c /g' $1_c.lp
