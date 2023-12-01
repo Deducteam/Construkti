@@ -4,7 +4,6 @@ require open Logic.Construkti.deduction;
 
 // Polymorphic equality 
 
-
 constant symbol = [a] : El a → El a → Prop;
 notation = infix 4;
 rule Prf (@= $a $x $y) ↪ Π (P : El $a → Prop), Prf (P $x) → Prf (P $y);
@@ -47,4 +46,51 @@ begin
     assume Pxyz;
     assume P Px;
     refine (and_e_r (x = y) (y = z) Pxyz) P ((and_e_l (x = y) (y = z) Pxyz) P Px)
+end;
+
+opaque symbol eq_f : Π (a b : Set), Prf (`∀ f : El a → El b, `∀ x : El a, `∀ y : El a, ((x = y) ⇒ (f x = f y))) ≔ 
+begin
+    assume a b;
+    refine fa_i (λ f : El a → El b, `∀ x : El a, `∀ y : El a, ((x = y) ⇒ (f x = f y))) _;
+    assume f;
+    refine fa_i (λ x : El a, `∀ y : El a, ((x = y) ⇒ (f x = f y))) _;
+    assume x;
+    refine fa_i (λ y : El a, ((x = y) ⇒ (f x = f y))) _;
+    assume y;
+    refine imp_i (x = y) (f x = f y) _;
+    assume Pxy;
+    assume P;
+    refine Pxy (λ w : El a, P (f w))
+end;
+
+opaque symbol eq_f2 : Π (a1 a2 b : Set), Prf (`∀ f : El a1 → El a2 → El b, `∀ x1 : El a1, `∀ x2 : El a2, `∀ y1 : El a1, `∀ y2 : El a2, ((x1 = y1) ⇒ (x2 = y2) ⇒ (f x1 x2 = f y1 y2))) ≔ 
+begin
+    assume a1 a2 b;
+    refine fa_i (λ f : El a1 → El a2 → El b, `∀ x1 : El a1, `∀ x2 : El a2, `∀ y1 : El a1, `∀ y2 : El a2, ((x1 = y1) ⇒ (x2 = y2) ⇒ (f x1 x2 = f y1 y2))) _;
+    assume f;
+    refine fa_i (λ x1 : El a1, `∀ x2 : El a2, `∀ y1 : El a1, `∀ y2 : El a2, ((x1 = y1) ⇒ (x2 = y2) ⇒ (f x1 x2 = f y1 y2))) _;
+    assume x1;
+    refine fa_i (λ x2 : El a2, `∀ y1 : El a1, `∀ y2 : El a2, ((x1 = y1) ⇒ (x2 = y2) ⇒ (f x1 x2 = f y1 y2))) _;
+    assume x2;
+    refine fa_i (λ y1 : El a1, `∀ y2 : El a2, ((x1 = y1) ⇒ (x2 = y2) ⇒ (f x1 x2 = f y1 y2))) _;
+    assume y1;
+    refine fa_i (λ y2 : El a2, ((x1 = y1) ⇒ (x2 = y2) ⇒ (f x1 x2 = f y1 y2))) _;
+    assume y2;
+    refine imp_i (x1 = y1) ((x2 = y2) ⇒ (f x1 x2 = f y1 y2)) _;
+    assume Pxy1;
+    refine imp_i (x2 = y2) (f x1 x2 = f y1 y2) _;
+    assume Pxy2;
+    assume P Pfx;
+    refine Pxy1 (λ w : El a1, P (f w y2)) _;
+    refine Pxy2 (λ w : El a2, P (f x1 w)) Pfx
+end;
+
+opaque symbol eq_fg : Π (a b c : Set), Prf (`∀ f : El b → El c, `∀ g : El a → El b, `∀ x : El a, `∀ y : El a, ((x = y) ⇒ (f (g x) = f (g y)))) ≔ 
+begin
+    assume a b c;
+    refine fa_i (λ f : El b → El c, `∀ g : El a → El b, `∀ x : El a, `∀ y : El a, ((x = y) ⇒ (f (g x) = f (g y)))) _;
+    assume f;
+    refine fa_i (λ g : El a → El b, `∀ x : El a, `∀ y : El a, ((x = y) ⇒ (f (g x) = f (g y)))) _;
+    assume g;
+    refine fa_e (λ f : El a → El c, `∀ x : El a, `∀ y : El a, ((x = y) ⇒ (f x = f y))) (eq_f a c) (λ w, f (g w))
 end;

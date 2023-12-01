@@ -2,9 +2,7 @@
 
 cp $1.lp $1_c.lp
 
-sed -i '1s/^/require open Logic.Construkti.properties;\nrequire open Logic.Construkti.kuroda;\n/' $1_c.lp
-
-sed -i 's/Prf/Prf ¬ ¬/g' $1_c.lp
+sed -i 's/ Prf/ Prf ¬ ¬/g' $1_c.lp
 sed -i 's/∀/∀_c/g' $1_c.lp
 sed -i 's/imp_i /imp_i_c /g' $1_c.lp
 sed -i 's/imp_e /imp_e_c /g' $1_c.lp
@@ -25,3 +23,5 @@ sed -i 's/ex_e /ex_e_c /g' $1_c.lp
 sed -i 's/absurd /absurd_c /g' $1_c.lp
 
 sed -i 's/apply /refine /g' $1_c.lp
+
+sed -i '1s/^/require open Logic.Construkti.properties;\nrequire open Logic.Construkti.kuroda;\n/' $1_c.lp
