@@ -18,16 +18,17 @@ cd construkti
 ```
 - Write your proofs only using the connectors and quantifiers presented in `logic.lp`, and the natural deduction rules presented in `deduction.lp`. 
 
-- If you want to translate the proofs of `file.lp`, run 
+- If you want to translate the proofs contained in the folder `folder` (that is in the directory `construkti`), run 
 ```
-bash translate.sh file
+bash translate.sh folder
 ```
+It creates a new folder `folder_c`, that contains the translated proofs.
 
 NB: If you want to translate the proofs and to obtain simpler proofs that use rewrite rules, run 
 ```
-bash translate_rules.sh file
+bash translate_rules.sh folder
 ```
-You can test it on the file `test.lp`.
+You can test it on the folder `library`, that contain some proofs in huigher-order logic.
 
 
 ## How does it work?
