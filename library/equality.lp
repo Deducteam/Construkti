@@ -5,7 +5,7 @@ require open Logic.Construkti.deduction;
 // Polymorphic equality 
 
 constant symbol = [a] : El a → El a → Prop;
-notation = infix 4;
+notation = infix 40;
 rule Prf (@= $a $x $y) ↪ Π (P : El $a → Prop), Prf (P $x) → Prf (P $y);
 
 opaque symbol eq_refl : Π (a : Set), Prf (`∀ x : El a, x = x) ≔
