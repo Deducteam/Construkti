@@ -1,7 +1,7 @@
 // Base of the encoding
 
 constant symbol Prop : TYPE;
-symbol Prf : Prop → TYPE;
+injective symbol Prf : Prop → TYPE;
 constant symbol Set : TYPE;
 injective symbol El : Set → TYPE;
 
