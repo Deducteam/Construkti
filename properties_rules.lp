@@ -7,7 +7,7 @@ require open Logic.Construkti.rules;
 opaque symbol prop_double_neg (p : Prop) : Prf (p ⇒ ¬ ¬ p) ≔ 
 begin
     assume p pP pNP;
-    apply neg_e p _ _ 
+    refine neg_e p _ _ 
     {refine pNP}
     {refine pP}
 end;

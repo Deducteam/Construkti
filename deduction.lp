@@ -5,7 +5,7 @@ symbol imp_i (p q : Prop) : (Prf p → Prf q) → Prf (p ⇒ q);
 symbol imp_e (p q : Prop) : Prf (p ⇒ q) → Prf p → Prf q;
 
 // Conjunction
-symbol and_i(p q : Prop) : Prf p → Prf q → Prf (p ∧ q);
+symbol and_i (p q : Prop) : Prf p → Prf q → Prf (p ∧ q);
 symbol and_e_l (p q : Prop) : Prf (p ∧ q) → Prf p;
 symbol and_e_r (p q : Prop) : Prf (p ∧ q) → Prf q;
 

@@ -107,7 +107,7 @@ begin
     refine fa_i (λ B, `∃ P, (P ⇒ A) ∧ (P ⇒ B)) _;
     assume B;
     apply ex_i (λ P, (P ⇒ A) ∧ (P ⇒ B)) (A ∧ B) _;
-    refine and_i ((A ∧ B) ⇒ A) ((A ∧ B) ⇒ B) _ _
+    apply and_i ((A ∧ B) ⇒ A) ((A ∧ B) ⇒ B) _ _
     {refine imp_i (A ∧ B) A _;
     assume pAB;
     apply and_e_l A B pAB}

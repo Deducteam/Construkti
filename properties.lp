@@ -12,8 +12,8 @@ begin
     refine neg_i (¬ p) _;
     assume pNP;
     refine neg_e p _ _ 
-    {apply pNP}
-    {apply pP}
+    {refine pNP}
+    {refine pP}
 end;
 
 opaque symbol prop_neg_imp (p q : Prop) : Prf ((p ⇒ q) ⇒ (¬ q ⇒ ¬ p)) ≔ 
