@@ -24,13 +24,9 @@ bash translate.sh folder
 ```
 It creates a new folder `folder_c`, that contains the translated proofs.
 
-NB: If you want to translate the proofs and to obtain simpler proofs that use rewrite rules, run 
-```
-bash translate_rules.sh folder
-```
-You can test it on the folder `library`, that contain some proofs in huigher-order logic.
+You can test it on the folder `library`, that contain some proofs in higher-order logic.
 
 
 ## How does it work?
 
-`kuroda.lp` defines Kuroda's translation, i.e. the insertion of double negation before each formula and after each universal quantifier. Kuroda's translation relies on some properties, proved in `properties.lp`. The files `kuroda_rules.lp` and `properties_rules.lp` make use of `rules.lp`, which defines few rewrite rules that simplify the proofs.
+`kuroda.lp` defines Kuroda's translation, i.e. the insertion of double negation before each formula and after each universal quantifier. Kuroda's translation relies on some properties, proved in `properties.lp`.
