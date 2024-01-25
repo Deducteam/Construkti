@@ -1,4 +1,4 @@
-# Construkti --- Double negation translator for higher-order proofs in Dedukti and Lambdapi
+# Construkti, a double negation translator for higher-order proofs in Dedukti and Lambdapi
 
 [Dedukti](https://github.com/Deducteam/Dedukti) is a proof language based on the λΠ-calculus modulo, that is λ-calculus with dependent types and user-defined rewrite rules.
 
