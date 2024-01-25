@@ -58,7 +58,7 @@ begin
     refine neg_i (¬ (`∃ x, ¬ (p x))) _;
     assume pNENP;
     refine neg_e (∀ p) pNFP _;
-    refine fa_i p _;
+    refine all_i p _;
     assume t;
     refine imp_e (¬ ¬ (p t)) (p t) (double_neg_elim (p t)) _;
     refine neg_i (¬ (p t)) _;
@@ -72,7 +72,7 @@ begin
     refine ex_e (λ x, ¬ (p x)) pENP ⊥ _;
     assume t pNPt;
     refine neg_e (p t) pNPt _;
-    refine fa_e p pFP t}
+    refine all_e p pFP t}
 end;
 
 opaque symbol demorgan_ex : Π (a : Set), Π (p : El a → Prop), Prf (¬ ∃ p ⇔ ∀ (λ x, ¬ (p x))) ≔ 

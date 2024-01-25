@@ -38,7 +38,7 @@ end;
 
 opaque symbol clavius : Prf (`∀ A, (¬ A ⇒ A) ⇒ A) ≔
 begin
-    refine fa_i (λ A, (¬ A ⇒ A) ⇒ A) _;
+    refine all_i (λ A, (¬ A ⇒ A) ⇒ A) _;
     assume A;
     refine imp_i (¬ A ⇒ A) A _;
     assume pNAA;
@@ -51,9 +51,9 @@ end;
 
 opaque symbol tarski : Prf (`∀ A, `∀ B, A ∨ (A ⇒ B)) ≔
 begin
-    refine fa_i (λ A, `∀ B, A ∨ (A ⇒ B)) _;
+    refine all_i (λ A, `∀ B, A ∨ (A ⇒ B)) _;
     assume A;
-    refine fa_i (λ B, A ∨ (A ⇒ B)) _;
+    refine all_i (λ B, A ∨ (A ⇒ B)) _;
     assume B;
     refine or_e A (¬ A) (excluded_middle A) (A ∨ (A ⇒ B)) _ _ 
     {assume pA;
@@ -69,7 +69,7 @@ end;
 
 opaque symbol weak_peirce : Prf (`∀ A, ((A ⇒ ⊥) ⇒ A) ⇒ A) ≔
 begin
-    refine fa_i (λ A, ((A ⇒ ⊥) ⇒ A) ⇒ A) _;
+    refine all_i (λ A, ((A ⇒ ⊥) ⇒ A) ⇒ A) _;
     assume A;
     refine imp_i ((A ⇒ ⊥) ⇒ A) A _;
     assume pAFA;
@@ -85,14 +85,14 @@ end;
 
 opaque symbol peirce : Prf (`∀ A, `∀ B, ((A ⇒ B) ⇒ A) ⇒ A) ≔
 begin
-    refine fa_i (λ A, `∀ B, ((A ⇒ B) ⇒ A) ⇒ A) _;
+    refine all_i (λ A, `∀ B, ((A ⇒ B) ⇒ A) ⇒ A) _;
     assume A;
-    refine fa_i (λ B, ((A ⇒ B) ⇒ A) ⇒ A) _;
+    refine all_i (λ B, ((A ⇒ B) ⇒ A) ⇒ A) _;
     assume B;
     refine imp_i ((A ⇒ B) ⇒ A) A _;
     assume pABA;
     refine imp_e ((A ⇒ ⊥) ⇒ A) A _ _ 
-    {refine fa_e (λ A, ((A ⇒ ⊥) ⇒ A) ⇒ A) weak_peirce A}
+    {refine all_e (λ A, ((A ⇒ ⊥) ⇒ A) ⇒ A) weak_peirce A}
     {refine imp_i (A ⇒ ⊥) A _;
     assume pAF;
     refine imp_e (A ⇒ B) A pABA _;

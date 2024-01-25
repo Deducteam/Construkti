@@ -5,7 +5,7 @@ require open Construkti.logic;
 
 opaque symbol imp_refl : Prf (`∀ A, A ⇒ A) ≔ 
 begin
-    refine fa_i (λ A, A ⇒ A) _;
+    refine all_i (λ A, A ⇒ A) _;
     assume A;
     refine imp_i A A _;
     assume pA;
@@ -14,11 +14,11 @@ end;
 
 opaque symbol imp_trans : Prf (`∀ A, `∀ B, `∀ C, ((A ⇒ B) ∧ (B ⇒ C)) ⇒ (A ⇒ C)) ≔ 
 begin
-    refine fa_i (λ A, `∀ B, `∀ C, ((A ⇒ B) ∧ (B ⇒ C)) ⇒ (A ⇒ C)) _;
+    refine all_i (λ A, `∀ B, `∀ C, ((A ⇒ B) ∧ (B ⇒ C)) ⇒ (A ⇒ C)) _;
     assume A;
-    refine fa_i (λ B, `∀ C, ((A ⇒ B) ∧ (B ⇒ C)) ⇒ (A ⇒ C)) _;
+    refine all_i (λ B, `∀ C, ((A ⇒ B) ∧ (B ⇒ C)) ⇒ (A ⇒ C)) _;
     assume B;
-    refine fa_i (λ C, ((A ⇒ B) ∧ (B ⇒ C)) ⇒ (A ⇒ C)) _;
+    refine all_i (λ C, ((A ⇒ B) ∧ (B ⇒ C)) ⇒ (A ⇒ C)) _;
     assume C;
     refine imp_i ((A ⇒ B) ∧ (B ⇒ C)) (A ⇒ C) _;
     assume pABBC;
@@ -30,9 +30,9 @@ end;
 
 opaque symbol and_comm : Prf (`∀ A, `∀ B, (A ∧ B) ⇒ (B ∧ A)) ≔ 
 begin
-    refine fa_i (λ A, `∀ B, (A ∧ B) ⇒ (B ∧ A)) _;
+    refine all_i (λ A, `∀ B, (A ∧ B) ⇒ (B ∧ A)) _;
     assume A;
-    refine fa_i (λ B, (A ∧ B) ⇒ (B ∧ A)) _;
+    refine all_i (λ B, (A ∧ B) ⇒ (B ∧ A)) _;
     assume B; 
     refine imp_i (A ∧ B) (B ∧ A) _;
     assume pA;
@@ -43,11 +43,11 @@ end;
 
 opaque symbol and_assoc : Prf (`∀ A, `∀ B, `∀ C, (A ∧ B) ∧ C ⇔ A ∧ B ∧ C) ≔ 
 begin
-    refine fa_i (λ A, `∀ B, `∀ C, (A ∧ B) ∧ C ⇔ A ∧ B ∧ C) _;
+    refine all_i (λ A, `∀ B, `∀ C, (A ∧ B) ∧ C ⇔ A ∧ B ∧ C) _;
     assume A;
-    refine fa_i (λ B, `∀ C, (A ∧ B) ∧ C ⇔ A ∧ B ∧ C) _;
+    refine all_i (λ B, `∀ C, (A ∧ B) ∧ C ⇔ A ∧ B ∧ C) _;
     assume B;
-    refine fa_i (λ C, (A ∧ B) ∧ C ⇔ A ∧ B ∧ C) _;
+    refine all_i (λ C, (A ∧ B) ∧ C ⇔ A ∧ B ∧ C) _;
     assume C;
     refine and_i ((A ∧ B) ∧ C ⇒ A ∧ (B ∧ C)) (A ∧ (B ∧ C) ⇒ (A ∧ B) ∧ C) _ _ 
     {refine imp_i ((A ∧ B) ∧ C) (A ∧ (B ∧ C)) _;
@@ -68,9 +68,9 @@ end;
 
 opaque symbol prop_and : Prf (`∀ A, `∀ B, `∃ P, (P ⇒ A) ∧ (P ⇒ B)) ≔ 
 begin
-    refine fa_i (λ A, `∀ B, `∃ P, (P ⇒ A) ∧ (P ⇒ B)) _;
+    refine all_i (λ A, `∀ B, `∃ P, (P ⇒ A) ∧ (P ⇒ B)) _;
     assume A;
-    refine fa_i (λ B, `∃ P, (P ⇒ A) ∧ (P ⇒ B)) _;
+    refine all_i (λ B, `∃ P, (P ⇒ A) ∧ (P ⇒ B)) _;
     assume B;
     apply ex_i (λ P, (P ⇒ A) ∧ (P ⇒ B)) (A ∧ B) _;
     apply and_i ((A ∧ B) ⇒ A) ((A ∧ B) ⇒ B) _ _
@@ -84,9 +84,9 @@ end;
 
 opaque symbol or_comm : Prf (`∀ A, `∀ B, (A ∨ B) ⇒ (B ∨ A)) ≔ 
 begin
-    refine fa_i (λ A, `∀ B, (A ∨ B) ⇒ (B ∨ A)) _;
+    refine all_i (λ A, `∀ B, (A ∨ B) ⇒ (B ∨ A)) _;
     assume A;
-    refine fa_i (λ B, (A ∨ B) ⇒ (B ∨ A)) _;
+    refine all_i (λ B, (A ∨ B) ⇒ (B ∨ A)) _;
     assume B; 
     refine imp_i (A ∨ B) (B ∨ A) _;
     assume pAB;
@@ -99,11 +99,11 @@ end;
 
 opaque symbol or_assoc : Prf (`∀ A, `∀ B, `∀ C, (A ∨ B) ∨ C ⇔ A ∨ B ∨ C) ≔ 
 begin
-    refine fa_i (λ A, `∀ B, `∀ C, (A ∨ B) ∨ C ⇔ A ∨ B ∨ C) _;
+    refine all_i (λ A, `∀ B, `∀ C, (A ∨ B) ∨ C ⇔ A ∨ B ∨ C) _;
     assume A;
-    refine fa_i (λ B, `∀ C, (A ∨ B) ∨ C ⇔ A ∨ B ∨ C) _;
+    refine all_i (λ B, `∀ C, (A ∨ B) ∨ C ⇔ A ∨ B ∨ C) _;
     assume B;
-    refine fa_i (λ C, (A ∨ B) ∨ C ⇔ A ∨ B ∨ C) _;
+    refine all_i (λ C, (A ∨ B) ∨ C ⇔ A ∨ B ∨ C) _;
     assume C;
     refine and_i ((A ∨ B) ∨ C ⇒ A ∨ (B ∨ C)) (A ∨ (B ∨ C) ⇒ (A ∨ B) ∨ C) _ _ 
     {refine imp_i ((A ∨ B) ∨ C) (A ∨ (B ∨ C)) _;
@@ -132,20 +132,20 @@ end;
 
 opaque symbol iff_refl : Prf (`∀ A, A ⇔ A) ≔ 
 begin
-    refine fa_i (λ A, A ⇔ A) _;
+    refine all_i (λ A, A ⇔ A) _;
     assume A;
     refine and_i (A ⇒ A) (A ⇒ A) _ _ 
-    {refine fa_e (λ P, P ⇒ P) imp_refl A}
-    {refine fa_e (λ P, P ⇒ P) imp_refl A}
+    {refine all_e (λ P, P ⇒ P) imp_refl A}
+    {refine all_e (λ P, P ⇒ P) imp_refl A}
 end;
 
 opaque symbol iff_trans : Prf (`∀ A, `∀ B, `∀ C, ((A ⇔ B) ∧ (B ⇔ C)) ⇒ (A ⇔ C)) ≔ 
 begin
-    refine fa_i (λ A, `∀ B, `∀ C, ((A ⇔ B) ∧ (B ⇔ C)) ⇒ (A ⇔ C)) _;
+    refine all_i (λ A, `∀ B, `∀ C, ((A ⇔ B) ∧ (B ⇔ C)) ⇒ (A ⇔ C)) _;
     assume A;
-    refine fa_i (λ B, `∀ C, ((A ⇔ B) ∧ (B ⇔ C)) ⇒ (A ⇔ C)) _;
+    refine all_i (λ B, `∀ C, ((A ⇔ B) ∧ (B ⇔ C)) ⇒ (A ⇔ C)) _;
     assume B;
-    refine fa_i (λ C, ((A ⇔ B) ∧ (B ⇔ C)) ⇒ (A ⇔ C)) _;
+    refine all_i (λ C, ((A ⇔ B) ∧ (B ⇔ C)) ⇒ (A ⇔ C)) _;
     assume C;
     refine imp_i ((A ⇔ B) ∧ (B ⇔ C)) (A ⇔ C) _;
     assume pABBC;
@@ -162,9 +162,9 @@ end;
 
 opaque symbol iff_sym : Prf (`∀ A, A ⇔ A) ≔ 
 begin
-    refine fa_i (λ A, A ⇔ A) _;
+    refine all_i (λ A, A ⇔ A) _;
     assume A;
     refine and_i (A ⇒ A) (A ⇒ A) _ _ 
-    {refine fa_e (λ P, P ⇒ P) imp_refl A}
-    {refine fa_e (λ P, P ⇒ P) imp_refl A}
+    {refine all_e (λ P, P ⇒ P) imp_refl A}
+    {refine all_e (λ P, P ⇒ P) imp_refl A}
 end;
