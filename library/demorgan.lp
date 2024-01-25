@@ -1,7 +1,6 @@
-require open Logic.Construkti.logic;
-require open Logic.Construkti.deduction;
-require open Logic.Construkti.library.doubleneg;
-require open Logic.Construkti.library.classic;
+require open Construkti.logic;
+require open Construkti.library.doubleneg;
+require open Construkti.library.classic;
 
 
 // De Morgan's laws

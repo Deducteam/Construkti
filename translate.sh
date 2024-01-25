@@ -24,8 +24,8 @@ sed -i 's/absurd /absurd_c /g' ./$1_c/*.lp
 
 sed -i 's/apply /refine /g' ./$1_c/*.lp
 
-sed -i '1s/^/require open Logic.Construkti.properties;\nrequire open Logic.Construkti.kuroda;\n/' ./$1_c/*.lp
+sed -i '1s/^/require open Construkti.properties;\nrequire open Construkti.kuroda;\n/' ./$1_c/*.lp
 
-sed -i "s/Logic.Construkti.$1/Logic.Construkti.$1_c/g" ./$1_c/*.lp
+sed -i "s/Construkti.$1/Construkti.$1_c/g" ./$1_c/*.lp
 
 echo "Files translated"

@@ -1,6 +1,5 @@
-require open Logic.Construkti.logic;
-require open Logic.Construkti.deduction;
-require open Logic.Construkti.library.equality;
+require open Construkti.logic;
+require open Construkti.library.equality;
 
 
 // Peano arithmetic 

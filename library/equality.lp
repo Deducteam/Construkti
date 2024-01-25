@@ -1,5 +1,4 @@
-require open Logic.Construkti.logic;
-require open Logic.Construkti.deduction;
+require open Construkti.logic;
 
 
 // Polymorphic equality 
