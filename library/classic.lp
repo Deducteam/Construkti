@@ -3,22 +3,6 @@ require open Construkti.logic;
 
 // Excluded middle and double negation elimination
 
-opaque symbol excluded_middle : Π A : Prop, Prf (A ∨ ¬ A) ≔
-begin
-    assume A;
-    refine absurd (A ∨ ¬ A) _;
-    refine imp_i (¬ (A ∨ ¬ A)) ⊥ _;
-    assume pANA;
-    refine neg_e (A ∨ ¬ A) _ _ 
-    {refine pANA}
-    {refine or_i_r (¬ A) _ A;
-    refine neg_i A _;
-    assume pA;
-    refine neg_e (A ∨ ¬ A) _ _ 
-    {refine pANA}
-    {refine or_i_l A pA (¬ A)}}
-end;
-
 opaque symbol double_neg_elim : Π A : Prop, Prf (¬ ¬ A ⇒ A) ≔
 begin
     assume A;
@@ -31,6 +15,13 @@ begin
     {assume pNA;
     refine bot_e _ A;
     refine neg_e (¬ A) pNNA pNA}
+end;
+
+opaque symbol absurd (p : Prop) : (Prf (¬ p) → Prf ⊥) → Prf p ≔
+begin
+    assume p pNPF;
+    refine imp_e  (¬ ¬ p) p (double_neg_elim p) _;
+    refine neg_i (¬ p) pNPF
 end;
 
 

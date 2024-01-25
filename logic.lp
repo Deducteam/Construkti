@@ -52,4 +52,4 @@ symbol all_e [a : Set] (p : El a → Prop) : Prf (∀ p) → Π x : El a, Prf (p
 symbol ex_i [a : Set] (p : El a → Prop) : Π t : El a, Prf (p t) → Prf (∃ p);
 symbol ex_e [a : Set] (p : El a → Prop) : Prf (∃ p) → Π r : Prop, (Π x : El a, Prf (p x) → Prf r) → Prf r;
 
-symbol absurd (p : Prop) : Prf (¬ p ⇒ ⊥) → Prf p;
+symbol excluded_middle : Π p : Prop, Prf (p ∨ ¬ p);

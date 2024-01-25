@@ -24,5 +24,5 @@ def fa_i_c : a : Set -> p : (El a -> Prop) -> (x : (El a) -> Prf_c (p x)) -> Prf
 def fa_e_c : a : Set -> p : (El a -> Prop) -> Prf_c (all_c a (x : (El a) => (p x))) -> x : (El a) -> Prf_c (p x).
 def ex_i_c : a : Set -> p : (El a -> Prop) -> t : (El a) -> Prf_c (p t) -> Prf_c (ex a p).
 def ex_e_c : a : Set -> p : (El a -> Prop) -> Prf_c (ex a p) -> r : Prop -> (x : (El a) -> Prf_c (p x) -> Prf_c r) -> Prf_c r.
-def absurd_c : p : Prop -> Prf_c (imp (not p) bot) -> Prf_c p.
+def excluded_middle_c : p : Prop -> Prf_c (or p (not p)).
 

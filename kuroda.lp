@@ -176,13 +176,17 @@ begin
     refine prop_neg_ex2 a p}
 end;
 
-opaque symbol absurd_c (p : Prop) : Prf_c (¬ p ⇒ ⊥) → Prf_c p ≔ 
+opaque symbol excluded_middle_c (p : Prop) : Prf_c (p ∨ ¬ p) ≔ 
 begin
-    assume p pP;
-    refine imp_e (¬ ¬ ¬ ¬ p) (¬ ¬ p) (prop_triple_neg (¬ p)) _;
-    refine neg_i (¬ ¬ ¬ p) _;
-    assume pT;
-    apply imp_e (¬ ¬ ⊥) ⊥ (prop_neg_bot);
-    refine imp_e (¬ ¬ ¬ p) (¬ ¬ ⊥) _ pT;
-    refine imp_e (¬ ¬ (¬ p ⇒ ⊥)) (¬ ¬ ¬ p ⇒ ¬ ¬ ⊥) (prop_neg_imp2 (¬ p) ⊥) pP
+    assume p;
+    refine neg_i (¬ (p ∨ ¬ p)) _;
+    assume pNPNP;
+    refine neg_e (p ∨ ¬ p) _ _ 
+    {refine pNPNP}
+    {refine or_i_r (¬ p) _ p;
+    refine neg_i p _;
+    assume pP;
+    refine neg_e (p ∨ ¬ p) _ _ 
+    {refine pNPNP}
+    {refine or_i_l p pP (¬ p)}}
 end;

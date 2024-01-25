@@ -52,4 +52,4 @@ def all_e : a : Set -> p : (El a -> Prop) -> Prf (all a p) -> x : El a -> Prf (p
 def ex_i : a : Set -> p : (El a -> Prop) -> t : El a -> Prf (p t) -> Prf (ex a p).
 def ex_e : a : Set -> p : (El a -> Prop) -> Prf (ex a p) -> r : Prop -> (x : El a -> Prf (p x) -> Prf r) -> Prf r.
 
-def absurd : p : Prop -> Prf (not (imp p bot)) -> Prf p.
+def excluded_middle : p : Prop -> Prf (or p (not p)).
