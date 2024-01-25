@@ -1,0 +1,28 @@
+(; Classical connectives and quantifiers ;)
+
+def Prf_c : Prop -> Type.
+[p] Prf_c p --> Prf (not (not p)).
+def all_c : a : Set -> (El a -> Prop) -> Prop.
+[a, p] all_c a p --> all a (x : (El a) => (not (not (p x)))).
+
+
+(; Kuroda's translation ;)
+(; To be transformed into theorems later ;)
+def imp_i_c : p : Prop -> q : Prop -> (Prf_c p -> Prf_c q) -> Prf_c (imp p q).
+def imp_e_c : p : Prop -> q : Prop -> Prf_c (imp p q) -> Prf_c p -> Prf_c q.
+def and_i_c : p : Prop -> q : Prop -> Prf_c p -> Prf_c q -> Prf_c (or p q).
+def and_e_l_c : p : Prop -> q : Prop -> Prf_c (or p q) -> Prf_c p.
+def and_e_r_c : p : Prop -> q : Prop -> Prf_c (or p q) -> Prf_c q.
+def or_i_l_c : p : Prop -> Prf_c p -> q : Prop -> Prf_c (or p q).
+def or_i_r_c : q : Prop -> Prf_c q -> p : Prop -> Prf_c (or p q).
+def or_e_c : p : Prop -> q : Prop -> Prf_c (or p q) -> r : Prop -> (Prf_c p -> Prf_c r) -> (Prf_c q -> Prf_c r) -> Prf_c r.
+def neg_i_c : p : Prop -> (Prf_c p -> Prf_c bot) -> Prf_c (not p).
+def neg_e_c : p : Prop -> Prf_c (not p) -> Prf_c p -> Prf_c bot.
+def top_i_c : Prf_c top.
+def bot_e_c : Prf_c bot -> p : Prop -> Prf_c p.
+def fa_i_c : a : Set -> p : (El a -> Prop) -> (x : (El a) -> Prf_c (p x)) -> Prf_c (all_c a (x : (El a) => (p x))).
+def fa_e_c : a : Set -> p : (El a -> Prop) -> Prf_c (all_c a (x : (El a) => (p x))) -> x : (El a) -> Prf_c (p x).
+def ex_i_c : a : Set -> p : (El a -> Prop) -> t : (El a) -> Prf_c (p t) -> Prf_c (ex a p).
+def ex_e_c : a : Set -> p : (El a -> Prop) -> Prf_c (ex a p) -> r : Prop -> (x : (El a) -> Prf_c (p x) -> Prf_c r) -> Prf_c r.
+def absurd_c : p : Prop -> Prf_c (imp (not p) bot) -> Prf_c p.
+

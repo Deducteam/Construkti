@@ -1,0 +1,30 @@
+(; Some results about double negations ;)
+(; To be transformed into theorems later ;)
+
+def prop_double_neg : p : Prop -> Prf (imp p (not (not p))).
+
+def prop_neg_imp : p : Prop -> q : Prop -> Prf (imp (imp p q) (imp (not q) (not p))).
+
+def prop_neg_imp1 : p : Prop -> q : Prop -> Prf (imp (imp (not (not p)) (not (not q))) (not (not (imp p q)))).
+
+def prop_neg_imp2 : p : Prop -> q : Prop -> Prf (imp (not (not (imp p q))) (imp (not (not p)) (not (not q)))).
+
+def prop_neg_and1 : p : Prop -> q : Prop -> Prf (imp (and (not (not p)) (not (not q))) (not (not (and p q)))).
+
+def prop_neg_and2 : p : Prop -> q : Prop -> Prf (imp (not (not (and p q))) (and (not (not p)) (not (not q)))).
+
+def prop_neg_or1 : p : Prop -> q : Prop -> Prf (imp (not (or p q)) (and (not p) (not q))).
+
+def prop_neg_or2 : p : Prop -> q : Prop -> Prf (imp (and (not p) (not q)) (not (or p q))).
+
+def prop_neg_fa : a : Set -> p : (El a -> Prop) -> Prf (imp (not (not (all a p))) (all a (x : (El a) => (not (not (p x)))))).
+
+def prop_neg_ex1 : a : Set -> p : (El a -> Prop) -> Prf (imp (not (ex a p)) (all a (x : (El a) => (not (p x))))).
+
+def prop_neg_ex2 : a : Set -> p : (El a -> Prop) -> Prf (imp (all a (x : (El a) => (not (p x)))) (not (ex a p))).
+
+def prop_triple_neg : p : Prop -> Prf (imp (not (not (not p))) (not p)).
+
+def prop_neg_bot : Prf (imp (not (not bot)) bot).
+
+def prop_neg_top : Prf (imp (not (not top)) top).
