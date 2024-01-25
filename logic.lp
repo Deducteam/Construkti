@@ -46,8 +46,8 @@ symbol neg_e (p : Prop) : Prf (¬ p) → Prf p → Prf ⊥;
 symbol top_i : Prf ⊤;
 symbol bot_e : Prf ⊥ → Π p : Prop, Prf p;
 
-symbol fa_i [a : Set] (p : El a → Prop) : (Π x : El a, Prf (p x)) → Prf (∀ p);
-symbol fa_e [a : Set] (p : El a → Prop) : Prf (∀ p) → Π x : El a, Prf (p x);
+symbol all_i [a : Set] (p : El a → Prop) : (Π x : El a, Prf (p x)) → Prf (∀ p);
+symbol all_e [a : Set] (p : El a → Prop) : Prf (∀ p) → Π x : El a, Prf (p x);
 
 symbol ex_i [a : Set] (p : El a → Prop) : Π t : El a, Prf (p t) → Prf (∃ p);
 symbol ex_e [a : Set] (p : El a → Prop) : Prf (∃ p) → Π r : Prop, (Π x : El a, Prf (p x) → Prf r) → Prf r;

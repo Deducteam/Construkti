@@ -159,7 +159,7 @@ begin
     assume a p;
     refine imp_i (¬ ¬ ∀ p) (∀ (λ x, ¬ ¬ (p x))) _;
     assume pNNP;
-    refine fa_i (λ x, ¬ ¬ (p x)) _;
+    refine all_i (λ x, ¬ ¬ (p x)) _;
     assume x;
     refine neg_i (¬ (p x)) _;
     assume pNP;
@@ -169,7 +169,7 @@ begin
     assume pP;
     refine neg_e (p x) _ _ 
     {refine pNP}
-    {apply fa_e  p pP x}}
+    {apply all_e  p pP x}}
 end;
 
 opaque symbol prop_neg_ex1 (a : Set) (p : El a → Prop) : Prf (¬ ∃ p ⇒ ∀ (λ x, ¬ (p x))) ≔ 
@@ -177,7 +177,7 @@ begin
     assume a p;
     refine imp_i (¬ ∃ p) (∀ (λ x, ¬ (p x))) _;
     assume pNP;
-    refine fa_i (λ x, ¬ (p x)) _;
+    refine all_i (λ x, ¬ (p x)) _;
     assume x;
     refine neg_i (p x) _;
     assume pP;
@@ -196,7 +196,7 @@ begin
     refine ex_e p pP ⊥ _;
     assume t pPt;
     refine neg_e (p t) _ _ 
-    {refine fa_e (λ x, ¬ (p x)) pNP t}
+    {refine all_e (λ x, ¬ (p x)) pNP t}
     {refine pPt}
 end;
 

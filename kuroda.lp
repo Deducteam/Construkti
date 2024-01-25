@@ -126,20 +126,20 @@ begin
     apply imp_e (¬ ¬ ⊥) ⊥ (prop_neg_bot) pB
 end;
 
-opaque symbol fa_i_c [a : Set] (p : El a → Prop) : (Π x : El a, Prf_c (p x)) → Prf_c (∀_c (λ x, p x)) ≔ 
+opaque symbol all_i_c [a : Set] (p : El a → Prop) : (Π x : El a, Prf_c (p x)) → Prf_c (∀_c (λ x, p x)) ≔ 
 begin
     assume a p pPx;
     refine imp_e (∀_c (λ x, p x)) (¬ ¬ ∀_c (λ x, p x)) (prop_double_neg (∀_c (λ x, p x))) _;
-    refine fa_i (λ x : El a, ¬ ¬ (p x)) _;
+    refine all_i (λ x : El a, ¬ ¬ (p x)) _;
     assume x;
     refine (pPx x)
 end;
 
-opaque symbol fa_e_c [a : Set] (p : El a → Prop) : Prf_c (∀_c (λ x, p x)) → Π x : El a, Prf_c (p x) ≔ 
+opaque symbol all_e_c [a : Set] (p : El a → Prop) : Prf_c (∀_c (λ x, p x)) → Π x : El a, Prf_c (p x) ≔ 
 begin
     assume a p pP t;
     refine imp_e (¬ ¬ ¬ ¬ (p t)) (¬ ¬ (p t)) (prop_triple_neg (¬ (p t))) _;
-    refine fa_e (λ x : El a, ¬ ¬ ¬ ¬ (p x)) _ t;
+    refine all_e (λ x : El a, ¬ ¬ ¬ ¬ (p x)) _ t;
     refine imp_e (¬ ¬ (`∀ x, ¬ ¬ (p x))) (`∀ x, ¬ ¬ ¬ ¬ (p x)) (prop_neg_fa a (λ x : El a, ¬ ¬ (p x))) pP
 end;
 
@@ -153,7 +153,7 @@ begin
     assume pNP;
     refine neg_e (¬ (p t)) _ _
     {refine pP}
-    {refine fa_e (λ x, ¬ (p x)) pNP t}}
+    {refine all_e (λ x, ¬ (p x)) pNP t}}
 end;
 
 opaque symbol ex_e_c [a : Set] (p : El a → Prop) : Prf_c (∃ p) → Π r : Prop, (Π x : El a, Prf_c (p x) → Prf_c r) → Prf_c r ≔ 
@@ -163,7 +163,7 @@ begin
     assume pR;
     refine neg_e (¬ ∀ (λ x, ¬ (p x))) _ _ 
     {refine imp_e (`∀ x, ¬ (p x)) (¬ ¬ (`∀ x, ¬ (p x))) (prop_double_neg (∀ (λ x, ¬ (p x)))) _;
-    refine fa_i (λ x, ¬ (p x)) _;
+    refine all_i (λ x, ¬ (p x)) _;
     assume x;
     refine imp_e (¬ ¬ ¬ (p x)) (¬ (p x)) (prop_triple_neg (p x)) _;
     refine neg_i (¬ ¬ (p x)) _;

@@ -23,8 +23,8 @@ then
     sed -i 's/neg_e /neg_e_c /g' $new
     sed -i 's/top_i/top_i_c/g' $new
     sed -i 's/bot_e /bot_e_c /g' $new
-    sed -i 's/fa_i /fa_i_c /g' $new
-    sed -i 's/fa_e /fa_e_c /g' $new
+    sed -i 's/all_i /all_i_c /g' $new
+    sed -i 's/all_e /all_e_c /g' $new
     sed -i 's/ex_i /ex_i_c /g' $new
     sed -i 's/ex_e /ex_e_c /g' $new
     sed -i 's/absurd /absurd_c /g' $new
@@ -82,8 +82,8 @@ else
     sed -i 's/neg_e /neg_e_c /g' ./$1_c/*.lp
     sed -i 's/top_i/top_i_c/g' ./$1_c/*.lp
     sed -i 's/bot_e /bot_e_c /g' ./$1_c/*.lp
-    sed -i 's/fa_i /fa_i_c /g' ./$1_c/*.lp
-    sed -i 's/fa_e /fa_e_c /g' ./$1_c/*.lp
+    sed -i 's/all_i /all_i_c /g' ./$1_c/*.lp
+    sed -i 's/all_e /all_e_c /g' ./$1_c/*.lp
     sed -i 's/ex_i /ex_i_c /g' ./$1_c/*.lp
     sed -i 's/ex_e /ex_e_c /g' ./$1_c/*.lp
     sed -i 's/absurd /absurd_c /g' ./$1_c/*.lp
