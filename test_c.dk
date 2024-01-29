@@ -1,0 +1,181 @@
+Prop : Type.
+
+injective Prf : Prop -> Type.
+
+Set : Type.
+
+injective El : Set -> Type.
+
+o : Set.
+
+[] El (o) --> Prop.
+
+fun : Set -> Set -> Set.
+
+[y, x] El (fun x y) --> (El x) -> El y.
+
+imp : Prop -> Prop -> Prop.
+
+and : Prop -> Prop -> Prop.
+
+or : Prop -> Prop -> Prop.
+
+top : Prop.
+
+bot : Prop.
+
+all : a:Set -> ((El a) -> Prop) -> Prop.
+
+ex : a:Set -> ((El a) -> Prop) -> Prop.
+
+not : Prop -> Prop.
+
+def equiv := p:Prop => q:Prop => and (imp p q) (imp q p).
+
+def imp_i : p:Prop -> q:Prop -> ((Prf p) -> Prf q) -> Prf (imp p q).
+
+def imp_e : p:Prop -> q:Prop -> (Prf (imp p q)) -> (Prf p) -> Prf q.
+
+def and_i : p:Prop -> q:Prop -> (Prf p) -> (Prf q) -> Prf (and p q).
+
+def and_e_l : p:Prop -> q:Prop -> (Prf (and p q)) -> Prf p.
+
+def and_e_r : p:Prop -> q:Prop -> (Prf (and p q)) -> Prf q.
+
+def or_i_l : p:Prop -> (Prf p) -> q:Prop -> Prf (or p q).
+
+def or_i_r : q:Prop -> (Prf q) -> p:Prop -> Prf (or p q).
+
+def or_e :
+  p:Prop -> q:Prop -> (Prf (or p q)) -> r:Prop -> ((Prf p) -> Prf r) -> ((Prf q) -> Prf r) -> Prf r.
+
+def neg_i : p:Prop -> ((Prf p) -> Prf bot) -> Prf (not p).
+
+def neg_e : p:Prop -> (Prf (not p)) -> (Prf p) -> Prf bot.
+
+def top_i : Prf top.
+
+def bot_e : (Prf bot) -> p:Prop -> Prf p.
+
+def all_i :
+  a:Set -> p:((El a) -> Prop) -> (x:(El a) -> Prf (p x)) -> Prf (all a p).
+
+def all_e :
+  a:Set -> p:((El a) -> Prop) -> (Prf (all a p)) -> x:(El a) -> Prf (p x).
+
+def ex_i :
+  a:Set -> p:((El a) -> Prop) -> t:(El a) -> (Prf (p t)) -> Prf (ex a p).
+
+def ex_e :
+  a:Set ->
+  p:((El a) -> Prop) -> (Prf (ex a p)) -> r:Prop -> (x:(El a) -> (Prf (p x)) -> Prf r) -> Prf r.
+
+def excluded_middle : p:Prop -> Prf (or p (not p)).
+
+def prop_double_neg : p:Prop -> Prf (imp p (not (not p))).
+
+def prop_neg_imp :
+  p:Prop -> q:Prop -> Prf (imp (imp p q) (imp (not q) (not p))).
+
+def prop_neg_imp1 :
+  p:Prop -> q:Prop -> Prf (imp (imp (not (not p)) (not (not q))) (not (not (imp p q)))).
+
+def prop_neg_imp2 :
+  p:Prop -> q:Prop -> Prf (imp (not (not (imp p q))) (imp (not (not p)) (not (not q)))).
+
+def prop_neg_and1 :
+  p:Prop -> q:Prop -> Prf (imp (and (not (not p)) (not (not q))) (not (not (and p q)))).
+
+def prop_neg_and2 :
+  p:Prop -> q:Prop -> Prf (imp (not (not (and p q))) (and (not (not p)) (not (not q)))).
+
+def prop_neg_or1 :
+  p:Prop -> q:Prop -> Prf (imp (not (or p q)) (and (not p) (not q))).
+
+def prop_neg_or2 :
+  p:Prop -> q:Prop -> Prf (imp (and (not p) (not q)) (not (or p q))).
+
+def prop_neg_fa :
+  a:Set -> p:((El a) -> Prop) -> Prf (imp (not (not (all a p))) (all a (x:(El a) => not (not (p x))))).
+
+def prop_neg_ex1 :
+  a:Set -> p:((El a) -> Prop) -> Prf (imp (not (ex a p)) (all a (x:(El a) => not (p x)))).
+
+def prop_neg_ex2 :
+  a:Set -> p:((El a) -> Prop) -> Prf (imp (all a (x:(El a) => not (p x))) (not (ex a p))).
+
+def prop_triple_neg : p:Prop -> Prf (imp (not (not (not p))) (not p)).
+
+def prop_neg_bot : Prf (imp (not (not bot)) bot).
+
+def prop_neg_top : Prf (imp (not (not top)) top).
+
+
+
+
+
+def imp_i_c :
+  p:Prop -> q:Prop -> ((Prf (not (not p))) -> Prf (not (not q))) -> Prf (not (not (imp p q))).
+
+def imp_e_c :
+  p:Prop -> q:Prop -> (Prf (not (not (imp p q)))) -> (Prf (not (not p))) -> Prf (not (not q)).
+
+def and_i_c :
+  p:Prop -> q:Prop -> (Prf (not (not p))) -> (Prf (not (not q))) -> Prf (not (not (or p q))).
+
+def and_e_l_c :
+  p:Prop -> q:Prop -> (Prf (not (not (or p q)))) -> Prf (not (not p)).
+
+def and_e_r_c :
+  p:Prop -> q:Prop -> (Prf (not (not (or p q)))) -> Prf (not (not q)).
+
+def or_i_l_c :
+  p:Prop -> (Prf (not (not p))) -> q:Prop -> Prf (not (not (or p q))).
+
+def or_i_r_c :
+  q:Prop -> (Prf (not (not q))) -> p:Prop -> Prf (not (not (or p q))).
+
+def or_e_c :
+  p:Prop ->
+  q:Prop ->
+  (Prf (not (not (or p q)))) ->
+  r:Prop ->
+  ((Prf (not (not p))) -> Prf (not (not r))) ->
+  ((Prf (not (not q))) -> Prf (not (not r))) -> Prf (not (not r)).
+
+def neg_i_c :
+  p:Prop -> ((Prf (not (not p))) -> Prf (not (not bot))) -> Prf (not (not (not p))).
+
+def neg_e_c :
+  p:Prop -> (Prf (not (not (not p)))) -> (Prf (not (not p))) -> Prf (not (not bot)).
+
+def top_i_c : Prf (not (not top)).
+
+def bot_e_c : (Prf (not (not bot))) -> p:Prop -> Prf (not (not p)).
+
+def all_i_c :
+  a:Set ->
+  p:((El a) -> Prop) ->
+  (x:(El a) -> Prf (not (not (p x)))) -> Prf (not (not (all a (x:(El a) => not (not (p x)))))).
+
+def all_e_c :
+  a:Set ->
+  p:((El a) -> Prop) ->
+  (Prf (not (not (all a (x:(El a) => not (not (p x))))))) -> x:(El a) -> Prf (not (not (p x))).
+
+def ex_i_c :
+  a:Set -> p:((El a) -> Prop) -> t:(El a) -> (Prf (not (not (p t)))) -> Prf (not (not (ex a p))).
+
+def ex_e_c :
+  a:Set ->
+  p:((El a) -> Prop) ->
+  (Prf (not (not (ex a p)))) ->
+  r:Prop -> (x:(El a) -> (Prf (not (not (p x)))) -> Prf (not (not r))) -> Prf (not (not r)).
+
+def excluded_middle_c : p:Prop -> Prf (not (not (or p (not p)))).
+
+thm theorem1 :
+  P:Prop -> Prf (not (not (imp P P)))
+  :=
+  P:Prop => imp_i_c P P (pP:(Prf (not (not P))) => pP).
+
