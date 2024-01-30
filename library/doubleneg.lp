@@ -155,7 +155,7 @@ begin
     refine and_e_r (¬ p) (¬ q) pNPQ}
 end;
 
-opaque symbol neg_fa (a : Set) (p : El a → Prop) : Prf (¬ ¬ ∀ p ⇒ ∀ (λ x, ¬ ¬ (p x))) ≔ 
+opaque symbol neg_all (a : Set) (p : El a → Prop) : Prf (¬ ¬ ∀ p ⇒ ∀ (λ x, ¬ ¬ (p x))) ≔ 
 begin
     assume a p;
     refine imp_i (¬ ¬ ∀ p) (∀ (λ x, ¬ ¬ (p x))) _;

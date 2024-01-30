@@ -116,7 +116,7 @@ thm prop_neg_or2 : p : Prop -> q : Prop -> Prf (imp (and (not p) (not q)) (not (
             (pP => neg_e p (and_e_l (not p) (not q) pNPQ) pP)
             (pQ => neg_e q (and_e_r (not p) (not q) pNPQ) pQ))).
 
-thm prop_neg_fa : a : Set -> p : (El a -> Prop) -> Prf (imp (not (not (all a p))) (all a (x : (El a) => (not (not (p x))))))
+thm prop_neg_all : a : Set -> p : (El a -> Prop) -> Prf (imp (not (not (all a p))) (all a (x : (El a) => (not (not (p x))))))
 := a => p => imp_i (not (not (all a p))) (all a (x => not (not (p x)))) 
     (pNNP => all_i a (x => not (not (p x))) 
         (x => neg_i (not (p x)) 
@@ -155,7 +155,6 @@ def Prf_c : Prop -> Type.
 def all_c : a : Set -> (El a -> Prop) -> Prop.
 [a, p] all_c a p --> all a (x : (El a) => (not (not (p x)))).
 
-(; To be transformed into theorems later ;)
 thm imp_i_c : p : Prop -> q : Prop -> (Prf_c p -> Prf_c q) -> Prf_c (imp p q)
 := p => q => pPQ => imp_e (imp (not (not p)) (not (not q))) (not (not (imp p q))) 
     (prop_neg_imp1 p q) 
@@ -226,7 +225,7 @@ thm all_e_c : a : Set -> p : (El a -> Prop) -> Prf_c (all_c a (x : (El a) => (p 
     (all_e a (x => not (not (not (not (p x)))))
         (imp_e (not (not (all a (x => not (not (p x)))))) 
             (all a (x => not (not (not (not (p x)))))) 
-            (prop_neg_fa a (x => not (not (p x)))) pP)
+            (prop_neg_all a (x => not (not (p x)))) pP)
         t).
 
 thm ex_i_c : a : Set -> p : (El a -> Prop) -> t : (El a) -> Prf_c (p t) -> Prf_c (ex a p)

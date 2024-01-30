@@ -48,7 +48,7 @@ end;
 
 // De Morgan's laws for quantifiers
 
-opaque symbol demorgan_fa : Π (a : Set), Π (p : El a → Prop), Prf (¬ ∀ p ⇔ ∃ (λ x, ¬ (p x))) ≔ 
+opaque symbol demorgan_all : Π (a : Set), Π (p : El a → Prop), Prf (¬ ∀ p ⇔ ∃ (λ x, ¬ (p x))) ≔ 
 begin
     assume a p;
     refine and_i (¬ (∀ p) ⇒ (`∃ x, ¬ (p x))) ((`∃ x, ¬ (p x)) ⇒ ¬ (∀ p)) _ _ 

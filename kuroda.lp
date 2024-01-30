@@ -140,7 +140,7 @@ begin
     assume a p pP t;
     refine imp_e (¬ ¬ ¬ ¬ (p t)) (¬ ¬ (p t)) (prop_triple_neg (¬ (p t))) _;
     refine all_e (λ x : El a, ¬ ¬ ¬ ¬ (p x)) _ t;
-    refine imp_e (¬ ¬ (`∀ x, ¬ ¬ (p x))) (`∀ x, ¬ ¬ ¬ ¬ (p x)) (prop_neg_fa a (λ x : El a, ¬ ¬ (p x))) pP
+    refine imp_e (¬ ¬ (`∀ x, ¬ ¬ (p x))) (`∀ x, ¬ ¬ ¬ ¬ (p x)) (prop_neg_all a (λ x : El a, ¬ ¬ (p x))) pP
 end;
 
 opaque symbol ex_i_c [a : Set] (p : El a → Prop) : Π t : El a, Prf_c (p t) → Prf_c (∃ p) ≔ 

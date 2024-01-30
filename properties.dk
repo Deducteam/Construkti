@@ -1,30 +1,92 @@
 (; Some results about double negations ;)
-(; To be transformed into theorems later ;)
 
-def prop_double_neg : p : Prop -> Prf (imp p (not (not p))).
 
-def prop_neg_imp : p : Prop -> q : Prop -> Prf (imp (imp p q) (imp (not q) (not p))).
+thm prop_double_neg : p : Prop -> Prf (imp p (not (not p))) 
+:= p => imp_i p (not (not p)) (pP => neg_i (not p) (pNP => neg_e p pNP pP)).
 
-def prop_neg_imp1 : p : Prop -> q : Prop -> Prf (imp (imp (not (not p)) (not (not q))) (not (not (imp p q)))).
+thm prop_neg_imp : p : Prop -> q : Prop -> Prf (imp (imp p q) (imp (not q) (not p)))
+:= p => q => imp_i (imp p q) (imp (not q) (not p)) 
+    (pPQ => imp_i (not q) (not p) (pNQ => neg_i p (pP => neg_e q pNQ (imp_e p q pPQ pP)))).
 
-def prop_neg_imp2 : p : Prop -> q : Prop -> Prf (imp (not (not (imp p q))) (imp (not (not p)) (not (not q)))).
+thm prop_neg_imp1 : p : Prop -> q : Prop -> Prf (imp (imp (not (not p)) (not (not q))) (not (not (imp p q))))
+:= p => q => 
+    imp_i (imp (not (not p)) (not (not q))) (not (not (imp p q))) 
+        (pPQ => neg_i (not (imp p q)) 
+            (pNPQ => neg_e (imp p q) pNPQ 
+                (imp_i p q 
+                    (pP => bot_e 
+                        (neg_e (not q) 
+                            (imp_e (not (not p)) (not (not q)) pPQ (imp_e p (not (not p)) (prop_double_neg p) pP)) 
+                            (neg_i q (pQ => neg_e (imp p q) pNPQ (imp_i p q (_ => pQ)))))
+                        q)))).
 
-def prop_neg_and1 : p : Prop -> q : Prop -> Prf (imp (and (not (not p)) (not (not q))) (not (not (and p q)))).
+thm prop_neg_imp2 : p : Prop -> q : Prop -> Prf (imp (not (not (imp p q))) (imp (not (not p)) (not (not q))))
+:= p => q => 
+    imp_i (not (not (imp p q))) (imp (not (not p)) (not (not q))) 
+        (pNNPQ => imp_i (not (not p)) (not (not q))
+            (pNNP => neg_i (not q) 
+                (pNQ => neg_e (not (imp p q)) pNNPQ
+                    (neg_i (imp p q) (pPQ => neg_e (not p) pNNP (neg_i p (pP => neg_e q pNQ (imp_e p q pPQ pP)))))))).
 
-def prop_neg_and2 : p : Prop -> q : Prop -> Prf (imp (not (not (and p q))) (and (not (not p)) (not (not q)))).
+thm prop_neg_and1 : p : Prop -> q : Prop -> Prf (imp (and (not (not p)) (not (not q))) (not (not (and p q))))
+:= p => q => imp_i (and (not (not p)) (not (not q))) (not (not (and p q)))
+    (pNNPQ => neg_i (not (and p q)) 
+        (pNPQ => neg_e (not q)
+            (and_e_r (not (not p)) (not (not q)) pNNPQ)
+            (neg_i q (pQ => neg_e (not p) 
+                (and_e_l (not (not p)) (not (not q)) pNNPQ)
+                (neg_i p (pP => neg_e (and p q) pNPQ (and_i p q pP pQ))))))).
 
-def prop_neg_or1 : p : Prop -> q : Prop -> Prf (imp (not (or p q)) (and (not p) (not q))).
+thm prop_neg_and2 : p : Prop -> q : Prop -> Prf (imp (not (not (and p q))) (and (not (not p)) (not (not q))))
+:= p => q => imp_i (not (not (and p q))) (and (not (not p)) (not (not q))) 
+    (pNNPQ => and_i (not (not p)) (not (not q))
+        (neg_i (not p) 
+            (pNP => neg_e (not (and p q)) pNNPQ
+                (neg_i (and p q) (pPQ => neg_e p pNP (and_e_l p q pPQ)))))
+        (neg_i (not q) 
+            (pNQ => neg_e (not (and p q)) pNNPQ
+                (neg_i (and p q) (pPQ => neg_e q pNQ (and_e_r p q pPQ)))))).
 
-def prop_neg_or2 : p : Prop -> q : Prop -> Prf (imp (and (not p) (not q)) (not (or p q))).
+thm prop_neg_or1 : p : Prop -> q : Prop -> Prf (imp (not (or p q)) (and (not p) (not q)))
+:= p => q => imp_i (not (or p q)) (and (not p) (not q)) 
+    (pNPQ => and_i (not p) (not q)
+        (neg_i p (pP => neg_e (or p q) pNPQ (or_i_l p pP q)))
+        (neg_i q (pQ => neg_e (or p q) pNPQ (or_i_r q pQ p)))).
 
-def prop_neg_fa : a : Set -> p : (El a -> Prop) -> Prf (imp (not (not (all a p))) (all a (x : (El a) => (not (not (p x)))))).
+thm prop_neg_or2 : p : Prop -> q : Prop -> Prf (imp (and (not p) (not q)) (not (or p q)))
+:= p => q => imp_i (and (not p) (not q)) (not (or p q)) 
+    (pNPQ => neg_i (or p q)
+        (pPQ => or_e p q pPQ bot
+            (pP => neg_e p (and_e_l (not p) (not q) pNPQ) pP)
+            (pQ => neg_e q (and_e_r (not p) (not q) pNPQ) pQ))).
 
-def prop_neg_ex1 : a : Set -> p : (El a -> Prop) -> Prf (imp (not (ex a p)) (all a (x : (El a) => (not (p x))))).
+thm prop_neg_all : a : Set -> p : (El a -> Prop) -> Prf (imp (not (not (all a p))) (all a (x : (El a) => (not (not (p x))))))
+:= a => p => imp_i (not (not (all a p))) (all a (x => not (not (p x)))) 
+    (pNNP => all_i a (x => not (not (p x))) 
+        (x => neg_i (not (p x)) 
+            (pNP => neg_e (not (all a p)) pNNP
+                (neg_i (all a p) 
+                    (pP => neg_e (p x) pNP (all_e a p pP x)))))).
 
-def prop_neg_ex2 : a : Set -> p : (El a -> Prop) -> Prf (imp (all a (x : (El a) => (not (p x)))) (not (ex a p))).
+thm prop_neg_ex1 : a : Set -> p : (El a -> Prop) -> Prf (imp (not (ex a p)) (all a (x : (El a) => (not (p x)))))
+:=  a => p => imp_i (not (ex a p)) (all a (x => not (p x))) 
+    (pNP => all_i a (x => not (p x)) 
+        (x => neg_i (p x) 
+            (pP => neg_e (ex a p) pNP (ex_i a p x pP)))).
 
-def prop_triple_neg : p : Prop -> Prf (imp (not (not (not p))) (not p)).
+thm prop_neg_ex2 : a : Set -> p : (El a -> Prop) -> Prf (imp (all a (x : (El a) => (not (p x)))) (not (ex a p)))
+:= a => p => 
+    imp_i (all a (x => not (p x))) (not (ex a p))
+        (pNP => neg_i (ex a p) 
+            (pP => ex_e a p pP bot 
+                (t => pPt => neg_e (p t) (all_e a (x => not (p x)) pNP t) pPt))).
 
-def prop_neg_bot : Prf (imp (not (not bot)) bot).
+thm prop_triple_neg : p : Prop -> Prf (imp (not (not (not p))) (not p))
+:= p => imp_i (not (not (not p))) (not p) 
+    (pNNNP => neg_i p (pP => neg_e (not (not p)) pNNNP (imp_e p (not (not p)) (prop_double_neg p) pP))).
 
-def prop_neg_top : Prf (imp (not (not top)) top).
+thm prop_neg_bot : Prf (imp (not (not bot)) bot)
+:= imp_i (not (not bot)) bot (pB => neg_e (not bot) pB (neg_i bot (pN => pN))).
+
+thm prop_neg_top : Prf (imp (not (not top)) top)
+:= imp_i (not (not top)) top (_ => top_i).
