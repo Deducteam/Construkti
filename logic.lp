@@ -32,12 +32,12 @@ symbol ⇔ p q ≔ (p ⇒ q) ∧ (q ⇒ p); notation ⇔ infix right 5;
 symbol imp_i (p q : Prop) : (Prf p → Prf q) → Prf (p ⇒ q);
 symbol imp_e (p q : Prop) : Prf (p ⇒ q) → Prf p → Prf q;
 
-symbol and_i (p q : Prop) : Prf p → Prf q → Prf (p ∧ q);
-symbol and_e_l (p q : Prop) : Prf (p ∧ q) → Prf p;
-symbol and_e_r (p q : Prop) : Prf (p ∧ q) → Prf q;
+symbol and_i : Π p : Prop, Prf p → Π q : Prop, Prf q → Prf (p ∧ q);
+symbol and_el (p q : Prop) : Prf (p ∧ q) → Prf p;
+symbol and_er (p q : Prop) : Prf (p ∧ q) → Prf q;
 
-symbol or_i_l (p : Prop) : Prf p → Π q : Prop, Prf (p ∨ q);
-symbol or_i_r (q : Prop) : Prf q → Π p : Prop, Prf (p ∨ q);
+symbol or_il : Π p : Prop, Prf p → Π q : Prop, Prf (p ∨ q);
+symbol or_ir : Π (p q : Prop), Prf q → Prf (p ∨ q);
 symbol or_e (p q : Prop) : Prf (p ∨ q) → Π r : Prop, (Prf p → Prf r) → (Prf q → Prf r) → Prf r;
 
 symbol neg_i (p : Prop) : (Prf p → Prf ⊥) → Prf (¬ p);

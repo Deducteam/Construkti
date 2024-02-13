@@ -27,17 +27,17 @@ not : Prop -> Prop.
 def equiv := p : Prop => q : Prop => and (imp p q) (imp q p).
 
 
-(; Natural deduction rules ;)
+(; Intuitionistic natural deduction rules ;)
 
 def imp_i : p : Prop -> q : Prop -> (Prf p -> Prf q) -> Prf (imp p q).
 def imp_e : p : Prop -> q : Prop -> Prf (imp p q) -> Prf p -> Prf q.
 
-def and_i : p : Prop -> q : Prop -> Prf p -> Prf q -> Prf (and p q).
-def and_e_l : p : Prop -> q : Prop -> Prf (and p q) -> Prf p.
-def and_e_r : p : Prop -> q : Prop -> Prf (and p q) -> Prf q.
+def and_i : p : Prop -> Prf p -> q : Prop -> Prf q -> Prf (and p q).
+def and_el : p : Prop -> q : Prop -> Prf (and p q) -> Prf p.
+def and_er : p : Prop -> q : Prop -> Prf (and p q) -> Prf q.
 
-def or_i_l : p : Prop -> Prf p -> q : Prop -> Prf (or p q).
-def or_i_r : q : Prop -> Prf q -> p : Prop -> Prf (or p q).
+def or_il : p : Prop -> Prf p -> q : Prop -> Prf (or p q).
+def or_ir : p : Prop ->  q : Prop -> Prf q -> Prf (or p q).
 def or_e : p : Prop -> q : Prop -> Prf (or p q) -> r : Prop -> (Prf p -> Prf r) -> (Prf q -> Prf r) -> Prf r.
 
 def neg_i : p : Prop -> (Prf p -> Prf bot) -> Prf (not p).
@@ -51,8 +51,6 @@ def all_e : a : Set -> p : (El a -> Prop) -> Prf (all a p) -> x : El a -> Prf (p
 
 def ex_i : a : Set -> p : (El a -> Prop) -> t : El a -> Prf (p t) -> Prf (ex a p).
 def ex_e : a : Set -> p : (El a -> Prop) -> Prf (ex a p) -> r : Prop -> (x : El a -> Prf (p x) -> Prf r) -> Prf r.
-
-def excluded_middle : p : Prop -> Prf (or p (not p)).
 
 
 (; Some results about double negations ;)
@@ -88,33 +86,37 @@ thm prop_neg_and1 : p : Prop -> q : Prop -> Prf (imp (and (not (not p)) (not (no
 := p => q => imp_i (and (not (not p)) (not (not q))) (not (not (and p q)))
     (pNNPQ => neg_i (not (and p q)) 
         (pNPQ => neg_e (not q)
-            (and_e_r (not (not p)) (not (not q)) pNNPQ)
+            (and_er (not (not p)) (not (not q)) pNNPQ)
             (neg_i q (pQ => neg_e (not p) 
-                (and_e_l (not (not p)) (not (not q)) pNNPQ)
-                (neg_i p (pP => neg_e (and p q) pNPQ (and_i p q pP pQ))))))).
+                (and_el (not (not p)) (not (not q)) pNNPQ)
+                (neg_i p (pP => neg_e (and p q) pNPQ (and_i p pP q pQ))))))).
 
 thm prop_neg_and2 : p : Prop -> q : Prop -> Prf (imp (not (not (and p q))) (and (not (not p)) (not (not q))))
 := p => q => imp_i (not (not (and p q))) (and (not (not p)) (not (not q))) 
-    (pNNPQ => and_i (not (not p)) (not (not q))
+    (pNNPQ => and_i
+        (not (not p))
         (neg_i (not p) 
             (pNP => neg_e (not (and p q)) pNNPQ
-                (neg_i (and p q) (pPQ => neg_e p pNP (and_e_l p q pPQ)))))
+                (neg_i (and p q) (pPQ => neg_e p pNP (and_el p q pPQ)))))
+        (not (not q))
         (neg_i (not q) 
             (pNQ => neg_e (not (and p q)) pNNPQ
-                (neg_i (and p q) (pPQ => neg_e q pNQ (and_e_r p q pPQ)))))).
+                (neg_i (and p q) (pPQ => neg_e q pNQ (and_er p q pPQ)))))).
 
 thm prop_neg_or1 : p : Prop -> q : Prop -> Prf (imp (not (or p q)) (and (not p) (not q)))
 := p => q => imp_i (not (or p q)) (and (not p) (not q)) 
-    (pNPQ => and_i (not p) (not q)
-        (neg_i p (pP => neg_e (or p q) pNPQ (or_i_l p pP q)))
-        (neg_i q (pQ => neg_e (or p q) pNPQ (or_i_r q pQ p)))).
+    (pNPQ => and_i 
+        (not p) 
+        (neg_i p (pP => neg_e (or p q) pNPQ (or_il p pP q)))
+        (not q)
+        (neg_i q (pQ => neg_e (or p q) pNPQ (or_ir p q pQ)))).
 
 thm prop_neg_or2 : p : Prop -> q : Prop -> Prf (imp (and (not p) (not q)) (not (or p q)))
 := p => q => imp_i (and (not p) (not q)) (not (or p q)) 
     (pNPQ => neg_i (or p q)
         (pPQ => or_e p q pPQ bot
-            (pP => neg_e p (and_e_l (not p) (not q) pNPQ) pP)
-            (pQ => neg_e q (and_e_r (not p) (not q) pNPQ) pQ))).
+            (pP => neg_e p (and_el (not p) (not q) pNPQ) pP)
+            (pQ => neg_e q (and_er (not p) (not q) pNPQ) pQ))).
 
 thm prop_neg_all : a : Set -> p : (El a -> Prop) -> Prf (imp (not (not (all a p))) (all a (x : (El a) => (not (not (p x))))))
 := a => p => imp_i (not (not (all a p))) (all a (x => not (not (p x)))) 
@@ -124,13 +126,13 @@ thm prop_neg_all : a : Set -> p : (El a -> Prop) -> Prf (imp (not (not (all a p)
                 (neg_i (all a p) 
                     (pP => neg_e (p x) pNP (all_e a p pP x)))))).
 
-thm prop_neg_ex1 : a : Set -> p : (El a -> Prop) -> Prf (imp (not (ex a p)) (all a (x : (El a) => (not (p x)))))
+thm prop_neg_elim1 : a : Set -> p : (El a -> Prop) -> Prf (imp (not (ex a p)) (all a (x : (El a) => (not (p x)))))
 :=  a => p => imp_i (not (ex a p)) (all a (x => not (p x))) 
     (pNP => all_i a (x => not (p x)) 
         (x => neg_i (p x) 
             (pP => neg_e (ex a p) pNP (ex_i a p x pP)))).
 
-thm prop_neg_ex2 : a : Set -> p : (El a -> Prop) -> Prf (imp (all a (x : (El a) => (not (p x)))) (not (ex a p)))
+thm prop_neg_elim2 : a : Set -> p : (El a -> Prop) -> Prf (imp (all a (x : (El a) => (not (p x)))) (not (ex a p)))
 := a => p => 
     imp_i (all a (x => not (p x))) (not (ex a p))
         (pNP => neg_i (ex a p) 
@@ -160,40 +162,42 @@ thm imp_i_c : p : Prop -> q : Prop -> (Prf_c p -> Prf_c q) -> Prf_c (imp p q)
     (prop_neg_imp1 p q) 
     (imp_i (not (not p)) (not (not q)) pPQ).
 
-thm imp_e_c : p : Prop -> q : Prop -> Prf_c (imp p q) -> Prf_c p -> Prf_c q
+thm imp_elim_c : p : Prop -> q : Prop -> Prf_c (imp p q) -> Prf_c p -> Prf_c q
 := p => q => pPQ => imp_e (not (not p)) (not (not q))
     (imp_e (not (not (imp p q))) (imp (not (not p)) (not (not q))) (prop_neg_imp2 p q) pPQ).
 
-thm and_i_c : p : Prop -> q : Prop -> Prf_c p -> Prf_c q -> Prf_c (and p q)
-:= p => q => pP => pQ => imp_e (and (not (not p)) (not (not q))) (not (not (and p q))) 
+thm and_i_c : p : Prop -> Prf_c p -> q : Prop -> Prf_c q -> Prf_c (and p q)
+:= p => pP => q => pQ => imp_e (and (not (not p)) (not (not q))) (not (not (and p q))) 
     (prop_neg_and1 p q)
-    (and_i (not (not p)) (not (not q)) pP pQ).
+    (and_i (not (not p)) pP (not (not q)) pQ).
 
-thm and_e_l_c : p : Prop -> q : Prop -> Prf_c (and p q) -> Prf_c p
-:= p => q => pPQ => and_e_l (not (not p)) (not (not q)) 
+thm and_el_c : p : Prop -> q : Prop -> Prf_c (and p q) -> Prf_c p
+:= p => q => pPQ => and_el (not (not p)) (not (not q)) 
     (imp_e (not (not (and p q))) (and (not (not p)) (not (not q))) (prop_neg_and2 p q) pPQ).
 
-thm and_e_r_c : p : Prop -> q : Prop -> Prf_c (and p q) -> Prf_c q
-:= p => q => pPQ => and_e_r (not (not p)) (not (not q)) 
+thm and_er_c : p : Prop -> q : Prop -> Prf_c (and p q) -> Prf_c q
+:= p => q => pPQ => and_er (not (not p)) (not (not q)) 
     (imp_e (not (not (and p q))) (and (not (not p)) (not (not q))) (prop_neg_and2 p q) pPQ).
 
-thm or_i_l_c : p : Prop -> Prf_c p -> q : Prop -> Prf_c (or p q)
+thm or_il_c : p : Prop -> Prf_c p -> q : Prop -> Prf_c (or p q)
 := p => pP => q => neg_i (not (or p q))
     (pPQ => neg_e (not p) pP
-        (and_e_l (not p) (not q) (imp_e (not (or p q)) (and (not p) (not q)) (prop_neg_or1 p q) pPQ))).
+        (and_el (not p) (not q) (imp_e (not (or p q)) (and (not p) (not q)) (prop_neg_or1 p q) pPQ))).
 
-thm or_i_r_c : q : Prop -> Prf_c q -> p : Prop -> Prf_c (or p q)
-:= q => pQ => p => neg_i (not (or p q))
+thm or_ir_c : p : Prop -> q : Prop -> Prf_c q -> Prf_c (or p q)
+:= p=> q => pQ => neg_i (not (or p q))
     (pPQ => neg_e (not q) pQ
-        (and_e_r (not p) (not q) (imp_e (not (or p q)) (and (not p) (not q)) (prop_neg_or1 p q) pPQ))).
+        (and_er (not p) (not q) (imp_e (not (or p q)) (and (not p) (not q)) (prop_neg_or1 p q) pPQ))).
 
-thm or_e_c : p : Prop -> q : Prop -> Prf_c (or p q) -> r : Prop -> (Prf_c p -> Prf_c r) -> (Prf_c q -> Prf_c r) -> Prf_c r
+thm or_elim_c : p : Prop -> q : Prop -> Prf_c (or p q) -> r : Prop -> (Prf_c p -> Prf_c r) -> (Prf_c q -> Prf_c r) -> Prf_c r
 := p => q => pPQ => r => pPR => pQR => neg_i (not r)
     (pR => neg_e (not (and (not p) (not q))) 
         (imp_e (and (not (not (not p))) (not (not (not q)))) (not (not (and (not p) (not q)))) 
             (prop_neg_and1 (not p) (not q))
-            (and_i (not (not (not p))) (not (not (not q))) 
+            (and_i 
+                (not (not (not p)))  
                 (neg_i (not (not p)) (pP => neg_e (not r) (pPR pP) pR))
+                (not (not (not q)))
                 (neg_i (not (not q)) (pQ => neg_e (not r) (pQR pQ) pR))))
         (imp_e (not (not (or p q))) (not (and (not p) (not q)))
             (imp_e (imp (and (not p) (not q)) (not (or p q))) (imp (not (not (or p q))) (not (and (not p) (not q)))) 
@@ -205,13 +209,13 @@ thm or_e_c : p : Prop -> q : Prop -> Prf_c (or p q) -> r : Prop -> (Prf_c p -> P
 thm neg_i_c : p : Prop -> (Prf_c p -> Prf_c bot) -> Prf_c (not p)
 := p => pP => neg_i (not (not p)) (pN => imp_e (not (not bot)) bot (prop_neg_bot) (pP pN)).
 
-thm neg_e_c : p : Prop -> Prf_c (not p) -> Prf_c p -> Prf_c bot
+thm neg_elim_c : p : Prop -> Prf_c (not p) -> Prf_c p -> Prf_c bot
 := p => pNP => pP => imp_e bot (not (not bot)) (prop_double_neg bot) (neg_e (not (not p)) pNP pP).
 
 thm top_i_c : Prf_c top
 := imp_e top (not (not top)) (prop_double_neg top) top_i.
 
-thm bot_e_c : Prf_c bot -> p : Prop -> Prf_c p
+thm bot_elim_c : Prf_c bot -> p : Prop -> Prf_c p
 := pB => p => bot_e (imp_e (not (not bot)) bot (prop_neg_bot) pB) (not (not p)).
 
 thm all_i_c : a : Set -> p : (El a -> Prop) -> (x : (El a) -> Prf_c (p x)) -> Prf_c (all_c a (x : (El a) => (p x)))
@@ -219,7 +223,7 @@ thm all_i_c : a : Set -> p : (El a -> Prop) -> (x : (El a) -> Prf_c (p x)) -> Pr
     (prop_double_neg (all_c a (x => p x))) 
     (all_i a (x => not (not (p x))) (x => pPx x)).
 
-thm all_e_c : a : Set -> p : (El a -> Prop) -> Prf_c (all_c a (x : (El a) => (p x))) -> x : (El a) -> Prf_c (p x)
+thm all_elim_c : a : Set -> p : (El a -> Prop) -> Prf_c (all_c a (x : (El a) => (p x))) -> x : (El a) -> Prf_c (p x)
 := a => p => pP => t => imp_e (not (not (not (not (p t))))) (not (not (p t))) 
     (prop_triple_neg (not (p t)))
     (all_e a (x => not (not (not (not (p x)))))
@@ -232,11 +236,11 @@ thm ex_i_c : a : Set -> p : (El a -> Prop) -> t : (El a) -> Prf_c (p t) -> Prf_c
 := a => p => t => pP => imp_e (not (all a (x => not (p x)))) (not (not (ex a p)))
     (imp_e (imp (not (ex a p)) (all a (x => not (p x)))) (imp (not (all a (x => not (p x)))) (not (not (ex a p)))) 
         (prop_neg_imp (not (ex a p)) (all a (x => not (p x))))
-        (prop_neg_ex1 a p))
+        (prop_neg_elim1 a p))
     (neg_i (all a (x => not (p x))) 
         (pNP => neg_e (not (p t)) pP (all_e a (x => not (p x)) pNP t))).
 
-thm ex_e_c : a : Set -> p : (El a -> Prop) -> Prf_c (ex a p) -> r : Prop -> (x : (El a) -> Prf_c (p x) -> Prf_c r) -> Prf_c r
+thm ex_elim_c : a : Set -> p : (El a -> Prop) -> Prf_c (ex a p) -> r : Prop -> (x : (El a) -> Prf_c (p x) -> Prf_c r) -> Prf_c r
 := a => p => pP => r => pPR => neg_i (not r)
     (pR => neg_e (not (all a (x => not (p x))))
         (imp_e (all a (x => not (p x))) (not (not (all a (x => not (p x))))) 
@@ -248,13 +252,12 @@ thm ex_e_c : a : Set -> p : (El a -> Prop) -> Prf_c (ex a p) -> r : Prop -> (x :
         (imp_e (not (not (ex a p))) (not (all a (x => not (p x))))
             (imp_e (imp (all a (x => not (p x))) (not (ex a p))) (imp (not (not (ex a p))) (not (all a (x => not (p x)))))
                 (prop_neg_imp (all a (x => not (p x))) (not (ex a p))) 
-                (prop_neg_ex2 a p))
+                (prop_neg_elim2 a p))
             pP)).
 
 thm excluded_middle_c : p : Prop -> Prf_c (or p (not p))
 := p => neg_i (not (or p (not p))) 
     (pNPNP => neg_e (or p (not p)) pNPNP 
-        (or_i_r (not p) 
-            (neg_i p (pP => neg_e (or p (not p)) pNPNP (or_i_l p pP (not p))))
-            p)).
+        (or_ir p (not p) 
+            (neg_i p (pP => neg_e (or p (not p)) pNPNP (or_il p pP (not p)))))).
 

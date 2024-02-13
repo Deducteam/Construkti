@@ -44,7 +44,7 @@ begin
     refine imp_i ((x = y) ∧ (y = z)) (x = z) _;
     assume Pxyz;
     assume P Px;
-    refine (and_e_r (x = y) (y = z) Pxyz) P ((and_e_l (x = y) (y = z) Pxyz) P Px)
+    refine (and_er (x = y) (y = z) Pxyz) P ((and_el (x = y) (y = z) Pxyz) P Px)
 end;
 
 opaque symbol eq_f : Π (a b : Set), Prf (`∀ f : El a → El b, `∀ x : El a, `∀ y : El a, ((x = y) ⇒ (f x = f y))) ≔ 

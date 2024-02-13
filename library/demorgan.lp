@@ -8,39 +8,39 @@ require open Construkti.library.classic;
 opaque symbol demorgan_and : Π (A B : Prop), Prf (¬ (A ∧ B) ⇔ ¬ A ∨ ¬ B) ≔
 begin
     assume A B;
-    refine and_i (¬ (A ∧ B) ⇒ (¬ A ∨ ¬ B)) ((¬ A ∨ ¬ B) ⇒ ¬ (A ∧ B)) _ _ 
+    refine and_i (¬ (A ∧ B) ⇒ (¬ A ∨ ¬ B)) _ ((¬ A ∨ ¬ B) ⇒ ¬ (A ∧ B)) _ 
     {refine imp_i (¬ (A ∧ B)) (¬ A ∨ ¬ B) _;
     assume pNAB;
     refine imp_e (¬ ¬ (¬ A ∨ ¬ B)) (¬ A ∨ ¬ B) (double_neg_elim (¬ A ∨ ¬ B)) _;
     refine neg_i (¬ (¬ A ∨ ¬ B)) _;
     assume pNNANB;
     refine neg_e (A ∧ B) pNAB _;
-    refine and_i A B _ _ 
+    refine and_i A _ B _ 
     {refine imp_e (¬ ¬ A) A (double_neg_elim A) _;
     refine neg_i (¬ A) _;
     assume pNA;
     refine neg_e (¬ A ∨ ¬ B) pNNANB _;
-    refine or_i_l (¬ A) pNA (¬ B)}
+    refine or_il (¬ A) pNA (¬ B)}
     {refine imp_e (¬ ¬ B) B (double_neg_elim B) _;
     refine neg_i (¬ B) _;
     assume pNB;
     refine neg_e (¬ A ∨ ¬ B) pNNANB _;
-    refine or_i_r (¬ B) pNB (¬ A)}}
+    refine or_ir (¬ A) (¬ B) pNB}}
     {refine imp_i (¬ A ∨ ¬ B) (¬ (A ∧ B)) _;
     assume pNANB;
     refine neg_i (A ∧ B) _;
     assume pAB;
     refine or_e (¬ A) (¬ B) pNANB ⊥ _ _ 
     {assume pNA;
-    refine neg_e A pNA (and_e_l A B pAB)}
+    refine neg_e A pNA (and_el A B pAB)}
     {assume pNB;
-    refine neg_e B pNB (and_e_r A B pAB)}}
+    refine neg_e B pNB (and_er A B pAB)}}
 end;
 
 opaque symbol demorgan_or : Π (A B : Prop), Prf (¬ (A ∨ B) ⇔ ¬ A ∧ ¬ B) ≔
 begin
     assume A B;
-    refine and_i (¬ (A ∨ B) ⇒ (¬ A ∧ ¬ B)) ((¬ A ∧ ¬ B) ⇒ ¬ (A ∨ B)) _ _ 
+    refine and_i (¬ (A ∨ B) ⇒ (¬ A ∧ ¬ B)) _ ((¬ A ∧ ¬ B) ⇒ ¬ (A ∨ B)) _ 
     {refine neg_or1 A B}
     {refine neg_or2 A B}
 end;
@@ -51,7 +51,7 @@ end;
 opaque symbol demorgan_all : Π (a : Set), Π (p : El a → Prop), Prf (¬ ∀ p ⇔ ∃ (λ x, ¬ (p x))) ≔ 
 begin
     assume a p;
-    refine and_i (¬ (∀ p) ⇒ (`∃ x, ¬ (p x))) ((`∃ x, ¬ (p x)) ⇒ ¬ (∀ p)) _ _ 
+    refine and_i (¬ (∀ p) ⇒ (`∃ x, ¬ (p x))) _ ((`∃ x, ¬ (p x)) ⇒ ¬ (∀ p)) _ 
     {refine imp_i (¬ (∀ p)) (`∃ x, ¬ (p x)) _;
     assume pNFP;
     refine imp_e (¬ ¬ (`∃ x, ¬ (p x))) (`∃ x, ¬ (p x)) (double_neg_elim (`∃ x, ¬ (p x))) _;
@@ -78,7 +78,7 @@ end;
 opaque symbol demorgan_ex : Π (a : Set), Π (p : El a → Prop), Prf (¬ ∃ p ⇔ ∀ (λ x, ¬ (p x))) ≔ 
 begin
     assume a p;
-    refine and_i (¬ ∃ p ⇒ ∀ (λ x, ¬ (p x))) ((∀ (λ x, ¬ (p x))) ⇒ ¬ ∃ p) _ _ 
+    refine and_i (¬ ∃ p ⇒ ∀ (λ x, ¬ (p x))) _ ((∀ (λ x, ¬ (p x))) ⇒ ¬ ∃ p) _ 
     {refine neg_ex1 a p}
     {refine neg_ex2 a p}
 end;

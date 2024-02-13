@@ -29,46 +29,46 @@ begin
     refine imp_e (¬ (¬ (p ⇒ q))) (¬ (¬ p) ⇒ ¬ (¬ q)) (prop_neg_imp2 p q) pPQ
 end;
 
-opaque symbol and_i_c (p q : Prop) : Prf_c p → Prf_c q → Prf_c (p ∧ q) ≔
+opaque symbol and_i_c : Π p : Prop, Prf_c p → Π q : Prop, Prf_c q → Prf_c (p ∧ q) ≔
 begin
-    assume p q pP pQ;
+    assume p pP q pQ;
     refine imp_e (¬ ¬ p ∧ ¬ ¬ q) (¬ ¬ (p ∧ q)) (prop_neg_and1 p q) _;
-    apply and_i (¬ ¬ p) (¬ ¬ q) pP pQ;
+    apply and_i (¬ ¬ p) pP (¬ ¬ q) pQ;
 end;
 
-opaque symbol and_e_l_c (p q : Prop) : Prf_c (p ∧ q) → Prf_c p ≔
+opaque symbol and_el_c (p q : Prop) : Prf_c (p ∧ q) → Prf_c p ≔
 begin
     assume p q pPQ; 
-    refine and_e_l (¬ (¬ p)) (¬ (¬ q)) _;
+    refine and_el (¬ (¬ p)) (¬ (¬ q)) _;
     apply imp_e (¬ ¬ (p ∧ q)) (¬ ¬ p ∧ ¬ ¬ q) (prop_neg_and2 p q) pPQ;
 end;
 
-opaque symbol and_e_r_c (p q : Prop) : Prf_c (p ∧ q) → Prf_c q ≔
+opaque symbol and_er_c (p q : Prop) : Prf_c (p ∧ q) → Prf_c q ≔
 begin
     assume p q pPQ; 
-    refine and_e_r (¬ (¬ p)) (¬ (¬ q)) _;
+    refine and_er (¬ (¬ p)) (¬ (¬ q)) _;
     apply imp_e (¬ ¬ (p ∧ q)) (¬ ¬ p ∧ ¬ ¬ q) (prop_neg_and2 p q) pPQ;
 end;
 
-opaque symbol or_i_l_c (p : Prop) : Prf_c p → Π q : Prop, Prf_c (p ∨ q) ≔
+opaque symbol or_il_c (p : Prop) : Prf_c p → Π q : Prop, Prf_c (p ∨ q) ≔
 begin
     assume p pP q;
     refine neg_i (¬ (p ∨ q)) _;
     assume pPQ;
     refine neg_e (¬ p) _ _ 
     {refine pP}
-    {refine and_e_l (¬ p) (¬ q) _;
+    {refine and_el (¬ p) (¬ q) _;
     apply imp_e (¬ (p ∨ q)) (¬ p ∧ ¬ q) (prop_neg_or1 p q) pPQ}
 end;
 
-opaque symbol or_i_r_c (q : Prop) : Prf_c q → Π p : Prop, Prf_c (p ∨ q) ≔
+opaque symbol or_ir_c : Π (p q : Prop), Prf_c q → Prf_c (p ∨ q) ≔
 begin
-    assume q pQ p;
+    assume p q pQ;
     refine neg_i (¬ (p ∨ q)) _;
     assume pPQ;
     refine neg_e (¬ q) _ _ 
     {refine pQ}
-    {refine and_e_r (¬ p) (¬ q) _;
+    {refine and_er (¬ p) (¬ q) _;
     apply imp_e (¬ (p ∨ q)) (¬ p ∧ ¬ q) (prop_neg_or1 p q) pPQ}
 end;
 
@@ -79,7 +79,7 @@ begin
     assume pR;
     refine neg_e (¬ (¬ p ∧ ¬ q)) _ _ 
     {refine imp_e (¬ ¬ ¬ p ∧ ¬ ¬ ¬ q) (¬ ¬ (¬ p ∧ ¬ q)) (prop_neg_and1 (¬ p) (¬ q)) _;
-    refine and_i (¬ ¬ ¬ p) (¬ ¬ ¬ q) _ _ 
+    refine and_i (¬ ¬ ¬ p) _ (¬ ¬ ¬ q) _ 
     {refine neg_i (¬ ¬ p) _;
     assume pP;
     refine neg_e (¬ r) _ _ 
@@ -183,10 +183,10 @@ begin
     assume pNPNP;
     refine neg_e (p ∨ ¬ p) _ _ 
     {refine pNPNP}
-    {refine or_i_r (¬ p) _ p;
+    {refine or_ir p (¬ p) _;
     refine neg_i p _;
     assume pP;
     refine neg_e (p ∨ ¬ p) _ _ 
     {refine pNPNP}
-    {refine or_i_l p pP (¬ p)}}
+    {refine or_il p pP (¬ p)}}
 end;

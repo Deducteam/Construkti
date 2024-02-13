@@ -48,10 +48,10 @@ begin
     assume B;
     refine or_e A (¬ A) (excluded_middle A) (A ∨ (A ⇒ B)) _ _ 
     {assume pA;
-    refine or_i_l A _ (A ⇒ B);
+    refine or_il A _ (A ⇒ B);
     refine pA}
     {assume pNA;
-    refine or_i_r (A ⇒ B) _ A;
+    refine or_ir A (A ⇒ B) _;
     refine imp_i A B _;
     assume pA;
     refine bot_e _ B;
