@@ -24,7 +24,7 @@ bot : Prop.
 all : a : Set -> (El a -> Prop) -> Prop.
 ex : a : Set -> (El a -> Prop) -> Prop.
 not : Prop -> Prop.
-def equiv := p : Prop => q : Prop => and (imp p q) (imp q p).
+def iff := p : Prop => q : Prop => and (imp p q) (imp q p).
 
 
 (; Intuitionistic natural deduction rules ;)

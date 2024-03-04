@@ -7,7 +7,6 @@ if [ $extension = "dk" ]
 then
     new="${filename}_c.dk"
     tmp="tmp.dk"
-    tmp2="tmp2"
     cp -r $1 $tmp
 
     sed -i 's/Prf /Prf_c /g' $tmp
@@ -31,18 +30,10 @@ then
     sed -i 's/ex_e /ex_e_c /g' $tmp
     sed -i 's/excluded_middle /excluded_middle_c /g' $tmp
 
-    cat kuroda.dk $tmp > "${tmp2}.dk"
+    cat kuroda.dk $tmp > $new
     rm $tmp
-    echo "[p] ${tmp2}.Prf_c p --> ${tmp2}.Prf (${tmp2}.not (${tmp2}.not p)). 
-          [a, p] ${tmp2}.all_c a p --> ${tmp2}.all a (x : (${tmp2}.El a) => (${tmp2}.not (${tmp2}.not (p x))))." > meta.dk
-    dk check -e "${tmp2}.dk" meta.dk
-    dk meta -m meta.dk "${tmp2}.dk" > $new
-    rm meta.dk meta.dko "${tmp2}.dk" "${tmp2}.dko"
-    sed -i '/def Prf_c : Prop -> Type./d' $new
-    sed -i '/Prf_c p --> Prf (not (not p))./d' $new
-    sed -i '/def all_c : a:Set -> ((El a) -> Prop) -> Prop./d' $new
-    sed -i '/all_c a p --> all a (x:(El a) => not (not (p x)))./d' $new
     echo "$1 has been translated"
+    echo "Do not forget to replace Prf_c P by Prf (not (not P)) in the left-hand side of the rewrite rules" 
 
 
 elif [ $extension = "lp" ]
