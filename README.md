@@ -61,4 +61,4 @@ The translated files are displayed in the folder `folder_c`.
 
 ### Benchmark
 
-You can test Construkti on `hol-lib.dk` and `hol-lib.lp`, that contain the proofs of theorems in propositional, first-order and higher-order logics, including classical theorems.
+You can test Construkti on `hol-lib.dk` and `hol-lib.lp`, that contain the proofs of theorems in propositional, first-order and higher-order logics, including classical theorems. After translation, `hol-lib_c.dk` and `hol-lib_c.lp` only contain intuitionistic proofs.
