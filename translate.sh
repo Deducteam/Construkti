@@ -41,8 +41,8 @@ then
     new="${filename}_c.lp"
     cp -r $1 $new
 
-    sed -i 's/Prf /Prf ¬ ¬ /g' $new
-    sed -i 's/Prf(/Prf ¬ ¬(/g' $new
+    sed -i 's/Prf /Prf_c /g' $new
+    sed -i 's/Prf(/Prf_c(/g' $new
     sed -i 's/∀/∀_c/g' $new
     sed -i 's/imp_i /imp_i_c /g' $new
     sed -i 's/imp_e /imp_e_c /g' $new
@@ -65,13 +65,14 @@ then
     sed -i '1s/^/require open Construkti.properties;\nrequire open Construkti.kuroda;\n/' $new
 
     echo "$1 has been translated"
+    echo "Do not forget to replace Prf_c P by Prf ¬ ¬P  in the left-hand side of the rewrite rules"
 
 
 else
     cp -r $1 $1_c
 
-    sed -i 's/Prf /Prf ¬ ¬ /g' ./$1_c/*.lp
-    sed -i 's/Prf(/Prf ¬ ¬(/g' ./$1_c/*.lp
+    sed -i 's/Prf /Prf_c /g' ./$1_c/*.lp
+    sed -i 's/Prf(/Prf_c(/g' ./$1_c/*.lp
     sed -i 's/∀/∀_c/g' ./$1_c/*.lp
     sed -i 's/imp_i /imp_i_c /g' ./$1_c/*.lp
     sed -i 's/imp_e /imp_e_c /g' ./$1_c/*.lp
@@ -90,11 +91,8 @@ else
     sed -i 's/ex_i /ex_i_c /g' ./$1_c/*.lp
     sed -i 's/ex_e /ex_e_c /g' ./$1_c/*.lp
     sed -i 's/excluded_middle /excluded_middle_c /g' ./$1_c/*.lp
-
     sed -i 's/apply /refine /g' ./$1_c/*.lp
-
     sed -i '1s/^/require open Construkti.properties;\nrequire open Construkti.kuroda;\n/' ./$1_c/*.lp
-
     sed -i "s/Construkti.$1/Construkti.$1_c/g" ./$1_c/*.lp
 
     for file in $1/*.lp
@@ -103,5 +101,6 @@ else
     done
 
     echo "The translated files are in the folder $1_c"
+    echo "Do not forget to replace Prf_c P by Prf ¬ ¬P  in the left-hand side of the rewrite rules" 
     
 fi

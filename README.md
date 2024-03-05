@@ -36,7 +36,7 @@ If you want to translate the Dedukti file `file.dk` such that the concatenation 
 ```
 bash translate.sh file.dk
 ```
-The translated proofs are displayed in the file `file_c.dk`. You can test it with `test.dk`.
+The translated proofs are displayed in the file `file_c.dk`.
 
 
 
@@ -46,7 +46,7 @@ If you want to translate the Lambdapi file `file.lp` that depends on the module 
 ```
 bash translate.sh file.lp
 ```
-The translated proofs are displayed in the file `file_c.lp`. You can test it with `test.lp`.
+The translated proofs are displayed in the file `file_c.lp`.
 
 
 
@@ -58,4 +58,7 @@ bash translate.sh folder
 ```
 The translated files are displayed in the folder `folder_c`.
 
-You can test it on the folder `library`, that contain some proofs in higher-order logic.
+
+### Benchmark
+
+You can test Construkti on `hol-lib.dk` and `hol-lib.lp`, that contain the proofs of theorems in propositional, first-order and higher-order logics, including classical theorems.
