@@ -1,2 +1,0 @@
-thm theorem1 : P : Prop -> Prf (imp P P) 
-:= P : Prop => imp_i P P (pP : Prf P => pP).

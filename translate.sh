@@ -33,7 +33,7 @@ then
     cat kuroda.dk $tmp > $new
     rm $tmp
     echo "$1 has been translated"
-    echo "Do not forget to replace Prf_c P by Prf (not (not P)) in the left-hand side of the rewrite rules" 
+    echo "[Warning] Apply the rewrites rules for Prf_c and all_c on the left-hand side of the rewrite rules" 
 
 
 elif [ $extension = "lp" ]
@@ -65,8 +65,7 @@ then
     sed -i '1s/^/require open Construkti.properties;\nrequire open Construkti.kuroda;\n/' $new
 
     echo "$1 has been translated"
-    echo "Do not forget to replace Prf_c P by Prf ¬ ¬P  in the left-hand side of the rewrite rules"
-
+    echo "[Warning] Apply the rewrites rules for Prf_c and ∀_c on the left-hand side of the rewrite rules" 
 
 else
     cp -r $1 $1_c
@@ -101,6 +100,6 @@ else
     done
 
     echo "The translated files are in the folder $1_c"
-    echo "Do not forget to replace Prf_c P by Prf ¬ ¬P  in the left-hand side of the rewrite rules" 
+    echo "[Warning] Apply the rewrites rules for Prf_c and ∀_c on the left-hand side of the rewrite rules"
     
 fi
