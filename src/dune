@@ -1,0 +1,4 @@
+(executable
+ (public_name construkti)
+ (name main)
+ (libraries dedukti.api dedukti.kernel))

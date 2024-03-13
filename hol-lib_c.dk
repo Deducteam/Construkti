@@ -1,0 +1,2474 @@
+(; Base of the encoding ;)
+
+Prop : Type.
+injective Prf : Prop -> Type.
+Set : Type.
+injective El : Set -> Type.
+
+
+(; Higher order ;)
+
+o : Set.
+[ ] El o --> Prop.
+fun : Set -> Set -> Set.
+[x,y] El (fun x y) --> El x -> El y.
+
+
+(; Connectives and quantifiers ;)
+
+imp : Prop -> Prop -> Prop.
+and : Prop -> Prop -> Prop.
+or : Prop -> Prop -> Prop.
+top : Prop.
+bot : Prop.
+all : a : Set -> (El a -> Prop) -> Prop.
+ex : a : Set -> (El a -> Prop) -> Prop.
+not : Prop -> Prop.
+def iff := p : Prop => q : Prop => and (imp p q) (imp q p).
+
+
+(; Intuitionistic natural deduction rules ;)
+
+def imp_i : p : Prop -> q : Prop -> (Prf p -> Prf q) -> Prf (imp p q).
+def imp_e : p : Prop -> q : Prop -> Prf (imp p q) -> Prf p -> Prf q.
+
+def and_i : p : Prop -> Prf p -> q : Prop -> Prf q -> Prf (and p q).
+def and_el : p : Prop -> q : Prop -> Prf (and p q) -> Prf p.
+def and_er : p : Prop -> q : Prop -> Prf (and p q) -> Prf q.
+
+def or_il : p : Prop -> Prf p -> q : Prop -> Prf (or p q).
+def or_ir : p : Prop ->  q : Prop -> Prf q -> Prf (or p q).
+def or_e : p : Prop -> q : Prop -> Prf (or p q) -> r : Prop -> (Prf p -> Prf r) -> (Prf q -> Prf r) -> Prf r.
+
+def neg_i : p : Prop -> (Prf p -> Prf bot) -> Prf (not p).
+def neg_e : p : Prop -> Prf (not p) -> Prf p -> Prf bot.
+
+def top_i : Prf top.
+def bot_e : Prf bot -> p : Prop -> Prf p.
+
+def all_i : a : Set -> p : (El a -> Prop) -> (x : El a -> Prf (p x)) -> Prf (all a p).
+def all_e : a : Set -> p : (El a -> Prop) -> Prf (all a p) -> x : El a -> Prf (p x).
+
+def ex_i : a : Set -> p : (El a -> Prop) -> t : El a -> Prf (p t) -> Prf (ex a p).
+def ex_e : a : Set -> p : (El a -> Prop) -> Prf (ex a p) -> r : Prop -> (x : El a -> Prf (p x) -> Prf r) -> Prf r.
+
+
+(; Some results about double negations ;)
+
+thm prop_double_neg : p : Prop -> Prf (imp p (not (not p))) 
+:= p => imp_i p (not (not p)) (pP => neg_i (not p) (pNP => neg_e p pNP pP)).
+
+thm prop_neg_imp : p : Prop -> q : Prop -> Prf (imp (imp p q) (imp (not q) (not p)))
+:= p => q => imp_i (imp p q) (imp (not q) (not p)) 
+    (pPQ => imp_i (not q) (not p) (pNQ => neg_i p (pP => neg_e q pNQ (imp_e p q pPQ pP)))).
+
+thm prop_neg_imp1 : p : Prop -> q : Prop -> Prf (imp (imp (not (not p)) (not (not q))) (not (not (imp p q))))
+:= p => q => 
+    imp_i (imp (not (not p)) (not (not q))) (not (not (imp p q))) 
+        (pPQ => neg_i (not (imp p q)) 
+            (pNPQ => neg_e (imp p q) pNPQ 
+                (imp_i p q 
+                    (pP => bot_e 
+                        (neg_e (not q) 
+                            (imp_e (not (not p)) (not (not q)) pPQ (imp_e p (not (not p)) (prop_double_neg p) pP)) 
+                            (neg_i q (pQ => neg_e (imp p q) pNPQ (imp_i p q (_ => pQ)))))
+                        q)))).
+
+thm prop_neg_imp2 : p : Prop -> q : Prop -> Prf (imp (not (not (imp p q))) (imp (not (not p)) (not (not q))))
+:= p => q => 
+    imp_i (not (not (imp p q))) (imp (not (not p)) (not (not q))) 
+        (pNNPQ => imp_i (not (not p)) (not (not q))
+            (pNNP => neg_i (not q) 
+                (pNQ => neg_e (not (imp p q)) pNNPQ
+                    (neg_i (imp p q) (pPQ => neg_e (not p) pNNP (neg_i p (pP => neg_e q pNQ (imp_e p q pPQ pP)))))))).
+
+thm prop_neg_and1 : p : Prop -> q : Prop -> Prf (imp (and (not (not p)) (not (not q))) (not (not (and p q))))
+:= p => q => imp_i (and (not (not p)) (not (not q))) (not (not (and p q)))
+    (pNNPQ => neg_i (not (and p q)) 
+        (pNPQ => neg_e (not q)
+            (and_er (not (not p)) (not (not q)) pNNPQ)
+            (neg_i q (pQ => neg_e (not p) 
+                (and_el (not (not p)) (not (not q)) pNNPQ)
+                (neg_i p (pP => neg_e (and p q) pNPQ (and_i p pP q pQ))))))).
+
+thm prop_neg_and2 : p : Prop -> q : Prop -> Prf (imp (not (not (and p q))) (and (not (not p)) (not (not q))))
+:= p => q => imp_i (not (not (and p q))) (and (not (not p)) (not (not q))) 
+    (pNNPQ => and_i
+        (not (not p))
+        (neg_i (not p) 
+            (pNP => neg_e (not (and p q)) pNNPQ
+                (neg_i (and p q) (pPQ => neg_e p pNP (and_el p q pPQ)))))
+        (not (not q))
+        (neg_i (not q) 
+            (pNQ => neg_e (not (and p q)) pNNPQ
+                (neg_i (and p q) (pPQ => neg_e q pNQ (and_er p q pPQ)))))).
+
+thm prop_neg_or1 : p : Prop -> q : Prop -> Prf (imp (not (or p q)) (and (not p) (not q)))
+:= p => q => imp_i (not (or p q)) (and (not p) (not q)) 
+    (pNPQ => and_i 
+        (not p) 
+        (neg_i p (pP => neg_e (or p q) pNPQ (or_il p pP q)))
+        (not q)
+        (neg_i q (pQ => neg_e (or p q) pNPQ (or_ir p q pQ)))).
+
+thm prop_neg_or2 : p : Prop -> q : Prop -> Prf (imp (and (not p) (not q)) (not (or p q)))
+:= p => q => imp_i (and (not p) (not q)) (not (or p q)) 
+    (pNPQ => neg_i (or p q)
+        (pPQ => or_e p q pPQ bot
+            (pP => neg_e p (and_el (not p) (not q) pNPQ) pP)
+            (pQ => neg_e q (and_er (not p) (not q) pNPQ) pQ))).
+
+thm prop_neg_all : a : Set -> p : (El a -> Prop) -> Prf (imp (not (not (all a p))) (all a (x : (El a) => (not (not (p x))))))
+:= a => p => imp_i (not (not (all a p))) (all a (x => not (not (p x)))) 
+    (pNNP => all_i a (x => not (not (p x))) 
+        (x => neg_i (not (p x)) 
+            (pNP => neg_e (not (all a p)) pNNP
+                (neg_i (all a p) 
+                    (pP => neg_e (p x) pNP (all_e a p pP x)))))).
+
+thm prop_neg_elim1 : a : Set -> p : (El a -> Prop) -> Prf (imp (not (ex a p)) (all a (x : (El a) => (not (p x)))))
+:=  a => p => imp_i (not (ex a p)) (all a (x => not (p x))) 
+    (pNP => all_i a (x => not (p x)) 
+        (x => neg_i (p x) 
+            (pP => neg_e (ex a p) pNP (ex_i a p x pP)))).
+
+thm prop_neg_elim2 : a : Set -> p : (El a -> Prop) -> Prf (imp (all a (x : (El a) => (not (p x)))) (not (ex a p)))
+:= a => p => 
+    imp_i (all a (x => not (p x))) (not (ex a p))
+        (pNP => neg_i (ex a p) 
+            (pP => ex_e a p pP bot 
+                (t => pPt => neg_e (p t) (all_e a (x => not (p x)) pNP t) pPt))).
+
+thm prop_triple_neg : p : Prop -> Prf (imp (not (not (not p))) (not p))
+:= p => imp_i (not (not (not p))) (not p) 
+    (pNNNP => neg_i p (pP => neg_e (not (not p)) pNNNP (imp_e p (not (not p)) (prop_double_neg p) pP))).
+
+thm prop_neg_bot : Prf (imp (not (not bot)) bot)
+:= imp_i (not (not bot)) bot (pB => neg_e (not bot) pB (neg_i bot (pN => pN))).
+
+thm prop_neg_top : Prf (imp (not (not top)) top)
+:= imp_i (not (not top)) top (_ => top_i).
+
+
+(; Kuroda's translation ;)
+
+thm imp_i_c : p : Prop -> q : Prop -> (Prf (not (not p)) -> Prf (not (not q))) -> Prf (not (not (imp p q)))
+:= p => q => pPQ => imp_e (imp (not (not p)) (not (not q))) (not (not (imp p q))) 
+    (prop_neg_imp1 p q) 
+    (imp_i (not (not p)) (not (not q)) pPQ).
+
+thm imp_e_c : p : Prop -> q : Prop -> Prf (not (not (imp p q))) -> Prf (not (not p)) -> Prf (not (not q))
+:= p => q => pPQ => imp_e (not (not p)) (not (not q))
+    (imp_e (not (not (imp p q))) (imp (not (not p)) (not (not q))) (prop_neg_imp2 p q) pPQ).
+
+thm and_i_c : p : Prop -> Prf (not (not p)) -> q : Prop -> Prf (not (not q)) -> Prf (not (not (and p q)))
+:= p => pP => q => pQ => imp_e (and (not (not p)) (not (not q))) (not (not (and p q))) 
+    (prop_neg_and1 p q)
+    (and_i (not (not p)) pP (not (not q)) pQ).
+
+thm and_el_c : p : Prop -> q : Prop -> Prf (not (not (and p q))) -> Prf (not (not p))
+:= p => q => pPQ => and_el (not (not p)) (not (not q)) 
+    (imp_e (not (not (and p q))) (and (not (not p)) (not (not q))) (prop_neg_and2 p q) pPQ).
+
+thm and_er_c : p : Prop -> q : Prop -> Prf (not (not (and p q))) -> Prf (not (not q))
+:= p => q => pPQ => and_er (not (not p)) (not (not q)) 
+    (imp_e (not (not (and p q))) (and (not (not p)) (not (not q))) (prop_neg_and2 p q) pPQ).
+
+thm or_il_c : p : Prop -> Prf (not (not p)) -> q : Prop -> Prf (not (not (or p q)))
+:= p => pP => q => neg_i (not (or p q))
+    (pPQ => neg_e (not p) pP
+        (and_el (not p) (not q) (imp_e (not (or p q)) (and (not p) (not q)) (prop_neg_or1 p q) pPQ))).
+
+thm or_ir_c : p : Prop -> q : Prop -> Prf (not (not q)) -> Prf (not (not (or p q)))
+:= p=> q => pQ => neg_i (not (or p q))
+    (pPQ => neg_e (not q) pQ
+        (and_er (not p) (not q) (imp_e (not (or p q)) (and (not p) (not q)) (prop_neg_or1 p q) pPQ))).
+
+thm or_e_c : p : Prop -> q : Prop -> Prf (not (not (or p q))) -> r : Prop -> (Prf (not (not p)) -> Prf (not (not r))) -> (Prf (not (not q)) -> Prf (not (not r))) -> Prf (not (not r))
+:= p => q => pPQ => r => pPR => pQR => neg_i (not r)
+    (pR => neg_e (not (and (not p) (not q))) 
+        (imp_e (and (not (not (not p))) (not (not (not q)))) (not (not (and (not p) (not q)))) 
+            (prop_neg_and1 (not p) (not q))
+            (and_i 
+                (not (not (not p)))  
+                (neg_i (not (not p)) (pP => neg_e (not r) (pPR pP) pR))
+                (not (not (not q)))
+                (neg_i (not (not q)) (pQ => neg_e (not r) (pQR pQ) pR))))
+        (imp_e (not (not (or p q))) (not (and (not p) (not q)))
+            (imp_e (imp (and (not p) (not q)) (not (or p q))) (imp (not (not (or p q))) (not (and (not p) (not q)))) 
+                (prop_neg_imp (and (not p) (not q)) (not (or p q))) 
+                (imp_i (and (not p) (not q)) (not (or p q)) 
+                    (pNPNQ => imp_e (and (not p) (not q)) (not (or p q)) (prop_neg_or2 p q) pNPNQ)))
+            pPQ)).
+
+thm neg_i_c : p : Prop -> (Prf (not (not p)) -> Prf (not (not bot))) -> Prf (not (not (not p)))
+:= p => pP => neg_i (not (not p)) (pN => imp_e (not (not bot)) bot (prop_neg_bot) (pP pN)).
+
+thm neg_e_c : p : Prop -> Prf (not (not (not p))) -> Prf (not (not p)) -> Prf (not (not bot))
+:= p => pNP => pP => imp_e bot (not (not bot)) (prop_double_neg bot) (neg_e (not (not p)) pNP pP).
+
+thm top_i_c : Prf (not (not top))
+:= imp_e top (not (not top)) (prop_double_neg top) top_i.
+
+thm bot_e_c : Prf (not (not bot)) -> p : Prop -> Prf (not (not p))
+:= pB => p => bot_e (imp_e (not (not bot)) bot (prop_neg_bot) pB) (not (not p)).
+
+thm all_i_c : a : Set -> p : (El a -> Prop) -> (x : (El a) -> Prf (not (not (p x)))) -> Prf (not (not (all a (x : (El a) => not (not (p x))))))
+:= a => p => pPx => imp_e (all a (x : (El a) => not (not (p x)))) (not (not (all a (x : (El a) => not (not (p x)))))) 
+    (prop_double_neg (all a (x : (El a) => not (not (p x))))) 
+    (all_i a (x => not (not (p x))) (x => pPx x)).
+
+thm all_e_c : a : Set -> p : (El a -> Prop) -> Prf (not (not (all a (x : (El a) => not (not (p x)))))) -> x : (El a) -> Prf (not (not (p x)))
+:= a => p => pP => t => imp_e (not (not (not (not (p t))))) (not (not (p t))) 
+    (prop_triple_neg (not (p t)))
+    (all_e a (x => not (not (not (not (p x)))))
+        (imp_e (not (not (all a (x => not (not (p x)))))) 
+            (all a (x => not (not (not (not (p x)))))) 
+            (prop_neg_all a (x => not (not (p x)))) pP)
+        t).
+
+thm ex_i_c : a : Set -> p : (El a -> Prop) -> t : (El a) -> Prf (not (not (p t))) -> Prf (not (not (ex a p)))
+:= a => p => t => pP => imp_e (not (all a (x => not (p x)))) (not (not (ex a p)))
+    (imp_e (imp (not (ex a p)) (all a (x => not (p x)))) (imp (not (all a (x => not (p x)))) (not (not (ex a p)))) 
+        (prop_neg_imp (not (ex a p)) (all a (x => not (p x))))
+        (prop_neg_elim1 a p))
+    (neg_i (all a (x => not (p x))) 
+        (pNP => neg_e (not (p t)) pP (all_e a (x => not (p x)) pNP t))).
+
+thm ex_e_c : a : Set -> p : (El a -> Prop) -> Prf (not (not (ex a p))) -> r : Prop -> (x : (El a) -> Prf (not (not (p x))) -> Prf (not (not r))) -> Prf (not (not r))
+:= a => p => pP => r => pPR => neg_i (not r)
+    (pR => neg_e (not (all a (x => not (p x))))
+        (imp_e (all a (x => not (p x))) (not (not (all a (x => not (p x))))) 
+            (prop_double_neg (all a (x => not (p x)))) 
+            (all_i a (x => not (p x)) 
+                (x => imp_e (not (not (not (p x)))) (not (p x)) 
+                    (prop_triple_neg (p x))
+                    (neg_i (not (not (p x))) (pNP => neg_e (not r) (pPR x pNP) pR)))))
+        (imp_e (not (not (ex a p))) (not (all a (x => not (p x))))
+            (imp_e (imp (all a (x => not (p x))) (not (ex a p))) (imp (not (not (ex a p))) (not (all a (x => not (p x)))))
+                (prop_neg_imp (all a (x => not (p x))) (not (ex a p))) 
+                (prop_neg_elim2 a p))
+            pP)).
+
+thm excluded_middle_c : p : Prop -> Prf (not (not (or p (not p))))
+:= p => neg_i (not (or p (not p))) 
+    (pNPNP => neg_e (or p (not p)) pNPNP 
+        (or_ir p (not p) 
+            (neg_i p (pP => neg_e (or p (not p)) pNPNP (or_il p pP (not p)))))).
+
+thm imp_refl :
+  Prf (not (not (all o (A:(El o) => not (not (imp A A))))))
+  :=
+  all_i_c o (A:(El o) => imp A A) (A:Prop => imp_i_c A A (pA:(Prf (not (not A))) => pA)).
+
+thm imp_trans :
+  Prf
+    (not
+       (not
+          (all
+             o
+             (A:(El o) =>
+              not
+                (not
+                   (all
+                      o
+                      (B:(El o) =>
+                       not
+                         (not
+                            (all
+                               o
+                               (C:(El o) =>
+                                not (not (imp (and (imp A B) (imp B C)) (imp A C)))))))))))))
+  :=
+  all_i_c
+    o
+    (A:(El o) =>
+     all
+       o
+       (B:(El o) =>
+        not (not (all o (C:(El o) => not (not (imp (and (imp A B) (imp B C)) (imp A C))))))))
+    (A:Prop =>
+     all_i_c
+       o
+       (B:(El o) => all o (C:(El o) => not (not (imp (and (imp A B) (imp B C)) (imp A C)))))
+       (B:Prop =>
+        all_i_c
+          o
+          (C:(El o) => imp (and (imp A B) (imp B C)) (imp A C))
+          (C:Prop =>
+           imp_i_c
+             (and (imp A B) (imp B C))
+             (imp A C)
+             (pABBC:(Prf (not (not (and (imp A B) (imp B C))))) =>
+              imp_i_c
+                A
+                C
+                (pA:(Prf (not (not A))) =>
+                 imp_e_c
+                   B
+                   C
+                   (and_er_c (imp A B) (imp B C) pABBC)
+                   (imp_e_c A B (and_el_c (imp A B) (imp B C) pABBC) pA)))))).
+
+thm and_comm :
+  Prf
+    (not
+       (not
+          (all o (A:(El o) => not (not (all o (B:(El o) => not (not (imp (and A B) (and B A))))))))))
+  :=
+  all_i_c
+    o
+    (A:(El o) => all o (B:(El o) => not (not (imp (and A B) (and B A)))))
+    (A:Prop =>
+     all_i_c
+       o
+       (B:(El o) => imp (and A B) (and B A))
+       (B:Prop =>
+        imp_i_c
+          (and A B)
+          (and B A)
+          (pAB:(Prf (not (not (and A B)))) => and_i_c B (and_er_c A B pAB) A (and_el_c A B pAB)))).
+
+thm and_assoc :
+  Prf
+    (not
+       (not
+          (all
+             o
+             (A:(El o) =>
+              not
+                (not
+                   (all
+                      o
+                      (B:(El o) =>
+                       not
+                         (not
+                            (all
+                               o
+                               (C:(El o) =>
+                                not (not (iff (and (and A B) C) (and A (and B C))))))))))))))
+  :=
+  all_i_c
+    o
+    (A:(El o) =>
+     all
+       o
+       (B:(El o) =>
+        not (not (all o (C:(El o) => not (not (iff (and (and A B) C) (and A (and B C)))))))))
+    (A:Prop =>
+     all_i_c
+       o
+       (B:(El o) => all o (C:(El o) => not (not (iff (and (and A B) C) (and A (and B C))))))
+       (B:Prop =>
+        all_i_c
+          o
+          (C:(El o) => iff (and (and A B) C) (and A (and B C)))
+          (C:Prop =>
+           and_i_c
+             (imp (and (and A B) C) (and A (and B C)))
+             (imp_i_c
+                (and (and A B) C)
+                (and A (and B C))
+                (pABC:(Prf (not (not (and (and A B) C)))) =>
+                 and_i_c
+                   A
+                   (and_el_c A B (and_el_c (and A B) C pABC))
+                   (and B C)
+                   (and_i_c
+                      B
+                      (and_er_c A B (and_el_c (and A B) C pABC))
+                      C
+                      (and_er_c (and A B) C pABC))))
+             (imp (and A (and B C)) (and (and A B) C))
+             (imp_i_c
+                (and A (and B C))
+                (and (and A B) C)
+                (pABC:(Prf (not (not (and A (and B C))))) =>
+                 and_i_c
+                   (and A B)
+                   (and_i_c
+                      A
+                      (and_el_c A (and B C) pABC)
+                      B
+                      (and_el_c B C (and_er_c A (and B C) pABC)))
+                   C
+                   (and_er_c B C (and_er_c A (and B C) pABC))))))).
+
+thm prop_and :
+  Prf
+    (not
+       (not
+          (all
+             o
+             (A:(El o) =>
+              not
+                (not (all o (B:(El o) => not (not (ex o (P:(El o) => and (imp P A) (imp P B)))))))))))
+  :=
+  all_i_c
+    o
+    (A:(El o) => all o (B:(El o) => not (not (ex o (P:(El o) => and (imp P A) (imp P B))))))
+    (A:Prop =>
+     all_i_c
+       o
+       (B:(El o) => ex o (P:(El o) => and (imp P A) (imp P B)))
+       (B:Prop =>
+        ex_i_c
+          o
+          (P:(El o) => and (imp P A) (imp P B))
+          (and A B)
+          (and_i_c
+             (imp (and A B) A)
+             (imp_i_c (and A B) A (pAB:(Prf (not (not (and A B)))) => and_el_c A B pAB))
+             (imp (and A B) B)
+             (imp_i_c (and A B) B (pAB:(Prf (not (not (and A B)))) => and_er_c A B pAB))))).
+
+thm or_comm :
+  Prf
+    (not
+       (not (all o (A:(El o) => not (not (all o (B:(El o) => not (not (imp (or A B) (or B A))))))))))
+  :=
+  all_i_c
+    o
+    (A:(El o) => all o (B:(El o) => not (not (imp (or A B) (or B A)))))
+    (A:Prop =>
+     all_i_c
+       o
+       (B:(El o) => imp (or A B) (or B A))
+       (B:Prop =>
+        imp_i_c
+          (or A B)
+          (or B A)
+          (pAB:(Prf (not (not (or A B)))) =>
+           or_e_c
+             A
+             B
+             pAB
+             (or B A)
+             (pA:(Prf (not (not A))) => or_ir_c B A pA)
+             (pB:(Prf (not (not B))) => or_il_c B pB A)))).
+
+thm or_assoc :
+  Prf
+    (not
+       (not
+          (all
+             o
+             (A:(El o) =>
+              not
+                (not
+                   (all
+                      o
+                      (B:(El o) =>
+                       not
+                         (not
+                            (all
+                               o
+                               (C:(El o) => not (not (iff (or (or A B) C) (or A (or B C))))))))))))))
+  :=
+  all_i_c
+    o
+    (A:(El o) =>
+     all
+       o
+       (B:(El o) => not (not (all o (C:(El o) => not (not (iff (or (or A B) C) (or A (or B C)))))))))
+    (A:Prop =>
+     all_i_c
+       o
+       (B:(El o) => all o (C:(El o) => not (not (iff (or (or A B) C) (or A (or B C))))))
+       (B:Prop =>
+        all_i_c
+          o
+          (C:(El o) => iff (or (or A B) C) (or A (or B C)))
+          (C:Prop =>
+           and_i_c
+             (imp (or (or A B) C) (or A (or B C)))
+             (imp_i_c
+                (or (or A B) C)
+                (or A (or B C))
+                (pABC:(Prf (not (not (or (or A B) C)))) =>
+                 or_e_c
+                   (or A B)
+                   C
+                   pABC
+                   (or A (or B C))
+                   (pAB:(Prf (not (not (or A B)))) =>
+                    or_e_c
+                      A
+                      B
+                      pAB
+                      (or A (or B C))
+                      (pA:(Prf (not (not A))) => or_il_c A pA (or B C))
+                      (pB:(Prf (not (not B))) => or_ir_c A (or B C) (or_il_c B pB C)))
+                   (pC:(Prf (not (not C))) => or_ir_c A (or B C) (or_ir_c B C pC))))
+             (imp (or A (or B C)) (or (or A B) C))
+             (imp_i_c
+                (or A (or B C))
+                (or (or A B) C)
+                (pABC:(Prf (not (not (or A (or B C))))) =>
+                 or_e_c
+                   A
+                   (or B C)
+                   pABC
+                   (or (or A B) C)
+                   (pA:(Prf (not (not A))) => or_il_c (or A B) (or_il_c A pA B) C)
+                   (pBC:(Prf (not (not (or B C)))) =>
+                    or_e_c
+                      B
+                      C
+                      pBC
+                      (or (or A B) C)
+                      (pB:(Prf (not (not B))) => or_il_c (or A B) (or_ir_c A B pB) C)
+                      (pC:(Prf (not (not C))) => or_ir_c (or A B) C pC))))))).
+
+thm iff_refl_rule :
+  A:Prop -> Prf (not (not (iff A A)))
+  :=
+  A:Prop =>
+  and_i_c
+    (imp A A)
+    (all_e_c o (P:(El o) => imp P P) imp_refl A)
+    (imp A A)
+    (all_e_c o (P:(El o) => imp P P) imp_refl A).
+
+thm iff_refl :
+  Prf (not (not (all o (A:(El o) => not (not (iff A A))))))
+  :=
+  all_i_c o (A:(El o) => iff A A) (A:Prop => iff_refl_rule A).
+
+thm iff_trans_rule :
+  A:Prop ->
+  B:Prop ->
+  C:Prop -> (Prf (not (not (iff A B)))) -> (Prf (not (not (iff B C)))) -> Prf (not (not (iff A C)))
+  :=
+  A:Prop =>
+  B:Prop =>
+  C:Prop =>
+  pAB:(Prf (not (not (iff A B)))) =>
+  pBC:(Prf (not (not (iff B C)))) =>
+  and_i_c
+    (imp A C)
+    (imp_i_c
+       A
+       C
+       (pA:(Prf (not (not A))) =>
+        imp_e_c
+          B
+          C
+          (and_el_c (imp B C) (imp C B) pBC)
+          (imp_e_c A B (and_el_c (imp A B) (imp B A) pAB) pA)))
+    (imp C A)
+    (imp_i_c
+       C
+       A
+       (pC:(Prf (not (not C))) =>
+        imp_e_c
+          B
+          A
+          (and_er_c (imp A B) (imp B A) pAB)
+          (imp_e_c C B (and_er_c (imp B C) (imp C B) pBC) pC))).
+
+thm iff_trans :
+  Prf
+    (not
+       (not
+          (all
+             o
+             (A:(El o) =>
+              not
+                (not
+                   (all
+                      o
+                      (B:(El o) =>
+                       not
+                         (not
+                            (all
+                               o
+                               (C:(El o) =>
+                                not (not (imp (and (iff A B) (iff B C)) (iff A C)))))))))))))
+  :=
+  all_i_c
+    o
+    (A:(El o) =>
+     all
+       o
+       (B:(El o) =>
+        not (not (all o (C:(El o) => not (not (imp (and (iff A B) (iff B C)) (iff A C))))))))
+    (A:Prop =>
+     all_i_c
+       o
+       (B:(El o) => all o (C:(El o) => not (not (imp (and (iff A B) (iff B C)) (iff A C)))))
+       (B:Prop =>
+        all_i_c
+          o
+          (C:(El o) => imp (and (iff A B) (iff B C)) (iff A C))
+          (C:Prop =>
+           imp_i_c
+             (and (iff A B) (iff B C))
+             (iff A C)
+             (pABBC:(Prf (not (not (and (iff A B) (iff B C))))) =>
+              iff_trans_rule
+                A
+                B
+                C
+                (and_el_c (iff A B) (iff B C) pABBC)
+                (and_er_c (iff A B) (iff B C) pABBC))))).
+
+thm iff_sym_rule :
+  A:Prop -> B:Prop -> (Prf (not (not (iff A B)))) -> Prf (not (not (iff B A)))
+  :=
+  A:Prop =>
+  B:Prop =>
+  pAB:(Prf (not (not (iff A B)))) =>
+  and_i_c (imp B A) (and_er_c (imp A B) (imp B A) pAB) (imp A B) (and_el_c (imp A B) (imp B A) pAB).
+
+thm iff_sym :
+  Prf
+    (not
+       (not
+          (all o (A:(El o) => not (not (all o (B:(El o) => not (not (imp (iff A B) (iff B A))))))))))
+  :=
+  all_i_c
+    o
+    (A:(El o) => all o (B:(El o) => not (not (imp (iff A B) (iff B A)))))
+    (A:Prop =>
+     all_i_c
+       o
+       (B:(El o) => imp (iff A B) (iff B A))
+       (B:Prop =>
+        imp_i_c (iff A B) (iff B A) (pAB:(Prf (not (not (iff A B)))) => iff_sym_rule A B pAB))).
+
+thm iff_and :
+  A:Prop ->
+  A':Prop ->
+  B:Prop ->
+  B':Prop ->
+  (Prf (not (not (iff A A')))) ->
+  (Prf (not (not (iff B B')))) -> Prf (not (not (iff (and A B) (and A' B'))))
+  :=
+  A:Prop =>
+  A':Prop =>
+  B:Prop =>
+  B':Prop =>
+  pAA':(Prf (not (not (iff A A')))) =>
+  pBB':(Prf (not (not (iff B B')))) =>
+  and_i_c
+    (imp (and A B) (and A' B'))
+    (imp_i_c
+       (and A B)
+       (and A' B')
+       (pAB:(Prf (not (not (and A B)))) =>
+        and_i_c
+          A'
+          (imp_e_c A A' (and_el_c (imp A A') (imp A' A) pAA') (and_el_c A B pAB))
+          B'
+          (imp_e_c B B' (and_el_c (imp B B') (imp B' B) pBB') (and_er_c A B pAB))))
+    (imp (and A' B') (and A B))
+    (imp_i_c
+       (and A' B')
+       (and A B)
+       (pAB':(Prf (not (not (and A' B')))) =>
+        and_i_c
+          A
+          (imp_e_c A' A (and_er_c (imp A A') (imp A' A) pAA') (and_el_c A' B' pAB'))
+          B
+          (imp_e_c B' B (and_er_c (imp B B') (imp B' B) pBB') (and_er_c A' B' pAB')))).
+
+thm iff_or :
+  A:Prop ->
+  A':Prop ->
+  B:Prop ->
+  B':Prop ->
+  (Prf (not (not (iff A A')))) ->
+  (Prf (not (not (iff B B')))) -> Prf (not (not (iff (or A B) (or A' B'))))
+  :=
+  A:Prop =>
+  A':Prop =>
+  B:Prop =>
+  B':Prop =>
+  pAA':(Prf (not (not (iff A A')))) =>
+  pBB':(Prf (not (not (iff B B')))) =>
+  and_i_c
+    (imp (or A B) (or A' B'))
+    (imp_i_c
+       (or A B)
+       (or A' B')
+       (pAB:(Prf (not (not (or A B)))) =>
+        or_e_c
+          A
+          B
+          pAB
+          (or A' B')
+          (pA:(Prf (not (not A))) =>
+           or_il_c A' (imp_e_c A A' (and_el_c (imp A A') (imp A' A) pAA') pA) B')
+          (pB:(Prf (not (not B))) =>
+           or_ir_c A' B' (imp_e_c B B' (and_el_c (imp B B') (imp B' B) pBB') pB))))
+    (imp (or A' B') (or A B))
+    (imp_i_c
+       (or A' B')
+       (or A B)
+       (pAB':(Prf (not (not (or A' B')))) =>
+        or_e_c
+          A'
+          B'
+          pAB'
+          (or A B)
+          (pA':(Prf (not (not A'))) =>
+           or_il_c A (imp_e_c A' A (and_er_c (imp A A') (imp A' A) pAA') pA') B)
+          (pB':(Prf (not (not B'))) =>
+           or_ir_c A B (imp_e_c B' B (and_er_c (imp B B') (imp B' B) pBB') pB')))).
+
+thm iff_imp :
+  A:Prop ->
+  A':Prop ->
+  B:Prop ->
+  B':Prop ->
+  (Prf (not (not (iff A A')))) ->
+  (Prf (not (not (iff B B')))) -> Prf (not (not (iff (imp A B) (imp A' B'))))
+  :=
+  A:Prop =>
+  A':Prop =>
+  B:Prop =>
+  B':Prop =>
+  pAA':(Prf (not (not (iff A A')))) =>
+  pBB':(Prf (not (not (iff B B')))) =>
+  and_i_c
+    (imp (imp A B) (imp A' B'))
+    (imp_i_c
+       (imp A B)
+       (imp A' B')
+       (pAB:(Prf (not (not (imp A B)))) =>
+        imp_i_c
+          A'
+          B'
+          (pA':(Prf (not (not A'))) =>
+           imp_e_c
+             B
+             B'
+             (and_el_c (imp B B') (imp B' B) pBB')
+             (imp_e_c A B pAB (imp_e_c A' A (and_er_c (imp A A') (imp A' A) pAA') pA')))))
+    (imp (imp A' B') (imp A B))
+    (imp_i_c
+       (imp A' B')
+       (imp A B)
+       (pAB':(Prf (not (not (imp A' B')))) =>
+        imp_i_c
+          A
+          B
+          (pA:(Prf (not (not A))) =>
+           imp_e_c
+             B'
+             B
+             (and_er_c (imp B B') (imp B' B) pBB')
+             (imp_e_c A' B' pAB' (imp_e_c A A' (and_el_c (imp A A') (imp A' A) pAA') pA))))).
+
+thm iff_neg :
+  A:Prop -> A':Prop -> (Prf (not (not (iff A A')))) -> Prf (not (not (iff (not A) (not A'))))
+  :=
+  A:Prop =>
+  A':Prop =>
+  pAA':(Prf (not (not (iff A A')))) =>
+  and_i_c
+    (imp (not A) (not A'))
+    (imp_i_c
+       (not A)
+       (not A')
+       (pNA:(Prf (not (not (not A)))) =>
+        neg_i_c
+          A'
+          (pA':(Prf (not (not A'))) =>
+           neg_e_c A pNA (imp_e_c A' A (and_er_c (imp A A') (imp A' A) pAA') pA'))))
+    (imp (not A') (not A))
+    (imp_i_c
+       (not A')
+       (not A)
+       (pNA':(Prf (not (not (not A')))) =>
+        neg_i_c
+          A
+          (pA:(Prf (not (not A))) =>
+           neg_e_c A' pNA' (imp_e_c A A' (and_el_c (imp A A') (imp A' A) pAA') pA)))).
+
+thm iff_all_c :
+  a:Set ->
+  A:((El a) -> Prop) ->
+  A':((El a) -> Prop) ->
+  (x:(El a) -> Prf (not (not (iff (A x) (A' x))))) ->
+  Prf (not (not (iff (all a (x => not (not (A x)))) (all a (x => not (not (A' x)))))))
+  :=
+  a:Set =>
+  A:((El a) -> Prop) =>
+  A':((El a) -> Prop) =>
+  pAA':(x:(El a) -> Prf (not (not (iff (A x) (A' x))))) =>
+  and_i_c
+    (imp (all a (x => not (not (A x)))) (all a (x => not (not (A' x)))))
+    (imp_i_c
+       (all a (x => not (not (A x))))
+       (all a (x => not (not (A' x))))
+       (pFA:(Prf (not (not (all a (x => not (not (A x))))))) =>
+        all_i_c
+          a
+          A'
+          (x:(El a) =>
+           imp_e_c
+             (A x)
+             (A' x)
+             (and_el_c (imp (A x) (A' x)) (imp (A' x) (A x)) (pAA' x))
+             (all_e_c a A pFA x))))
+    (imp (all a (x => not (not (A' x)))) (all a (x => not (not (A x)))))
+    (imp_i_c
+       (all a (x => not (not (A' x))))
+       (all a (x => not (not (A x))))
+       (pFA':(Prf (not (not (all a (x => not (not (A' x))))))) =>
+        all_i_c
+          a
+          A
+          (x:(El a) =>
+           imp_e_c
+             (A' x)
+             (A x)
+             (and_er_c (imp (A x) (A' x)) (imp (A' x) (A x)) (pAA' x))
+             (all_e_c a A' pFA' x)))).
+
+thm iff_ex :
+  a:Set ->
+  A:((El a) -> Prop) ->
+  A':((El a) -> Prop) ->
+  (x:(El a) -> Prf (not (not (iff (A x) (A' x))))) -> Prf (not (not (iff (ex a A) (ex a A'))))
+  :=
+  a:Set =>
+  A:((El a) -> Prop) =>
+  A':((El a) -> Prop) =>
+  pAA':(x:(El a) -> Prf (not (not (iff (A x) (A' x))))) =>
+  and_i_c
+    (imp (ex a A) (ex a A'))
+    (imp_i_c
+       (ex a A)
+       (ex a A')
+       (pEA:(Prf (not (not (ex a A)))) =>
+        ex_e_c
+          a
+          A
+          pEA
+          (ex a A')
+          (t:(El a) =>
+           pAt:(Prf (not (not (A t)))) =>
+           ex_i_c
+             a
+             A'
+             t
+             (imp_e_c (A t) (A' t) (and_el_c (imp (A t) (A' t)) (imp (A' t) (A t)) (pAA' t)) pAt))))
+    (imp (ex a A') (ex a A))
+    (imp_i_c
+       (ex a A')
+       (ex a A)
+       (pEA':(Prf (not (not (ex a A')))) =>
+        ex_e_c
+          a
+          A'
+          pEA'
+          (ex a A)
+          (t:(El a) =>
+           pAt':(Prf (not (not (A' t)))) =>
+           ex_i_c
+             a
+             A
+             t
+             (imp_e_c (A' t) (A t) (and_er_c (imp (A t) (A' t)) (imp (A' t) (A t)) (pAA' t)) pAt')))).
+
+thm iff_iff :
+  A:Prop ->
+  A':Prop ->
+  B:Prop ->
+  B':Prop ->
+  (Prf (not (not (iff A A')))) ->
+  (Prf (not (not (iff B B')))) -> Prf (not (not (iff (iff A B) (iff A' B'))))
+  :=
+  A:Prop =>
+  A':Prop =>
+  B:Prop =>
+  B':Prop =>
+  pAA':(Prf (not (not (iff A A')))) =>
+  pBB':(Prf (not (not (iff B B')))) =>
+  and_i_c
+    (imp (iff A B) (iff A' B'))
+    (imp_i_c
+       (iff A B)
+       (iff A' B')
+       (pAB:(Prf (not (not (iff A B)))) =>
+        and_i_c
+          (imp A' B')
+          (imp_i_c
+             A'
+             B'
+             (pA':(Prf (not (not A'))) =>
+              imp_e_c
+                B
+                B'
+                (and_el_c (imp B B') (imp B' B) pBB')
+                (imp_e_c
+                   A
+                   B
+                   (and_el_c (imp A B) (imp B A) pAB)
+                   (imp_e_c A' A (and_er_c (imp A A') (imp A' A) pAA') pA'))))
+          (imp B' A')
+          (imp_i_c
+             B'
+             A'
+             (pB':(Prf (not (not B'))) =>
+              imp_e_c
+                A
+                A'
+                (and_el_c (imp A A') (imp A' A) pAA')
+                (imp_e_c
+                   B
+                   A
+                   (and_er_c (imp A B) (imp B A) pAB)
+                   (imp_e_c B' B (and_er_c (imp B B') (imp B' B) pBB') pB'))))))
+    (imp (iff A' B') (iff A B))
+    (imp_i_c
+       (iff A' B')
+       (iff A B)
+       (pAB':(Prf (not (not (iff A' B')))) =>
+        and_i_c
+          (imp A B)
+          (imp_i_c
+             A
+             B
+             (pA:(Prf (not (not A))) =>
+              imp_e_c
+                B'
+                B
+                (and_er_c (imp B B') (imp B' B) pBB')
+                (imp_e_c
+                   A'
+                   B'
+                   (and_el_c (imp A' B') (imp B' A') pAB')
+                   (imp_e_c A A' (and_el_c (imp A A') (imp A' A) pAA') pA))))
+          (imp B A)
+          (imp_i_c
+             B
+             A
+             (pB:(Prf (not (not B))) =>
+              imp_e_c
+                A'
+                A
+                (and_er_c (imp A A') (imp A' A) pAA')
+                (imp_e_c
+                   B'
+                   A'
+                   (and_er_c (imp A' B') (imp B' A') pAB')
+                   (imp_e_c B B' (and_el_c (imp B B') (imp B' B) pBB') pB)))))).
+
+thm double_neg :
+  A:Prop -> Prf (not (not (imp A (not (not A)))))
+  :=
+  A:Prop =>
+  imp_i_c
+    A
+    (not (not A))
+    (pA:(Prf (not (not A))) => neg_i_c (not A) (pNA:(Prf (not (not (not A)))) => neg_e_c A pNA pA)).
+
+thm neg_imp :
+  p:Prop -> q:Prop -> Prf (not (not (imp (imp p q) (imp (not q) (not p)))))
+  :=
+  p:Prop =>
+  q:Prop =>
+  imp_i_c
+    (imp p q)
+    (imp (not q) (not p))
+    (pPQ:(Prf (not (not (imp p q)))) =>
+     imp_i_c
+       (not q)
+       (not p)
+       (pNQ:(Prf (not (not (not q)))) =>
+        neg_i_c p (pP:(Prf (not (not p))) => neg_e_c q pNQ (imp_e_c p q pPQ pP)))).
+
+thm neg_imp1 :
+  p:Prop -> q:Prop -> Prf (not (not (imp (imp (not (not p)) (not (not q))) (not (not (imp p q))))))
+  :=
+  p:Prop =>
+  q:Prop =>
+  imp_i_c
+    (imp (not (not p)) (not (not q)))
+    (not (not (imp p q)))
+    (pPQ:(Prf (not (not (imp (not (not p)) (not (not q)))))) =>
+     neg_i_c
+       (not (imp p q))
+       (pNPQ:(Prf (not (not (not (imp p q))))) =>
+        neg_e_c
+          (imp p q)
+          pNPQ
+          (imp_i_c
+             p
+             q
+             (pP:(Prf (not (not p))) =>
+              bot_e_c
+                (neg_e_c
+                   (not q)
+                   (imp_e_c
+                      (not (not p))
+                      (not (not q))
+                      pPQ
+                      (imp_e_c p (not (not p)) (double_neg p) pP))
+                   (neg_i_c
+                      q
+                      (pQ:(Prf (not (not q))) =>
+                       neg_e_c (imp p q) pNPQ (imp_i_c p q (pP2:(Prf (not (not p))) => pQ)))))
+                q)))).
+
+thm neg_imp2 :
+  p:Prop -> q:Prop -> Prf (not (not (imp (not (not (imp p q))) (imp (not (not p)) (not (not q))))))
+  :=
+  p:Prop =>
+  q:Prop =>
+  imp_i_c
+    (not (not (imp p q)))
+    (imp (not (not p)) (not (not q)))
+    (pNNPQ:(Prf (not (not (not (not (imp p q)))))) =>
+     imp_i_c
+       (not (not p))
+       (not (not q))
+       (pNNP:(Prf (not (not (not (not p))))) =>
+        neg_i_c
+          (not q)
+          (pNQ:(Prf (not (not (not q)))) =>
+           neg_e_c
+             (not (imp p q))
+             pNNPQ
+             (neg_i_c
+                (imp p q)
+                (pPQ:(Prf (not (not (imp p q)))) =>
+                 neg_e_c
+                   (not p)
+                   pNNP
+                   (neg_i_c p (pP:(Prf (not (not p))) => neg_e_c q pNQ (imp_e_c p q pPQ pP)))))))).
+
+thm neg_and1 :
+  p:Prop -> q:Prop -> Prf (not (not (imp (and (not (not p)) (not (not q))) (not (not (and p q))))))
+  :=
+  p:Prop =>
+  q:Prop =>
+  imp_i_c
+    (and (not (not p)) (not (not q)))
+    (not (not (and p q)))
+    (pNNPQ:(Prf (not (not (and (not (not p)) (not (not q)))))) =>
+     neg_i_c
+       (not (and p q))
+       (pNPQ:(Prf (not (not (not (and p q))))) =>
+        neg_e_c
+          (not q)
+          (and_er_c (not (not p)) (not (not q)) pNNPQ)
+          (neg_i_c
+             q
+             (pQ:(Prf (not (not q))) =>
+              neg_e_c
+                (not p)
+                (and_el_c (not (not p)) (not (not q)) pNNPQ)
+                (neg_i_c p (pP:(Prf (not (not p))) => neg_e_c (and p q) pNPQ (and_i_c p pP q pQ))))))).
+
+thm neg_and2 :
+  p:Prop -> q:Prop -> Prf (not (not (imp (not (not (and p q))) (and (not (not p)) (not (not q))))))
+  :=
+  p:Prop =>
+  q:Prop =>
+  imp_i_c
+    (not (not (and p q)))
+    (and (not (not p)) (not (not q)))
+    (pNNPQ:(Prf (not (not (not (not (and p q)))))) =>
+     and_i_c
+       (not (not p))
+       (neg_i_c
+          (not p)
+          (pNP:(Prf (not (not (not p)))) =>
+           neg_e_c
+             (not (and p q))
+             pNNPQ
+             (neg_i_c
+                (and p q)
+                (pPQ:(Prf (not (not (and p q)))) => neg_e_c p pNP (and_el_c p q pPQ)))))
+       (not (not q))
+       (neg_i_c
+          (not q)
+          (pNQ:(Prf (not (not (not q)))) =>
+           neg_e_c
+             (not (and p q))
+             pNNPQ
+             (neg_i_c
+                (and p q)
+                (pPQ:(Prf (not (not (and p q)))) => neg_e_c q pNQ (and_er_c p q pPQ)))))).
+
+thm neg_or1 :
+  p:Prop -> q:Prop -> Prf (not (not (imp (not (or p q)) (and (not p) (not q)))))
+  :=
+  p:Prop =>
+  q:Prop =>
+  imp_i_c
+    (not (or p q))
+    (and (not p) (not q))
+    (pNPQ:(Prf (not (not (not (or p q))))) =>
+     and_i_c
+       (not p)
+       (neg_i_c p (pP:(Prf (not (not p))) => neg_e_c (or p q) pNPQ (or_il_c p pP q)))
+       (not q)
+       (neg_i_c q (pQ:(Prf (not (not q))) => neg_e_c (or p q) pNPQ (or_ir_c p q pQ)))).
+
+thm neg_or2 :
+  p:Prop -> q:Prop -> Prf (not (not (imp (and (not p) (not q)) (not (or p q)))))
+  :=
+  p:Prop =>
+  q:Prop =>
+  imp_i_c
+    (and (not p) (not q))
+    (not (or p q))
+    (pNPQ:(Prf (not (not (and (not p) (not q))))) =>
+     neg_i_c
+       (or p q)
+       (pPQ:(Prf (not (not (or p q)))) =>
+        or_e_c
+          p
+          q
+          pPQ
+          bot
+          (pP:(Prf (not (not p))) => neg_e_c p (and_el_c (not p) (not q) pNPQ) pP)
+          (pQ:(Prf (not (not q))) => neg_e_c q (and_er_c (not p) (not q) pNPQ) pQ))).
+
+thm neg_all_c :
+  a:Set ->
+  p:((El a) -> Prop) ->
+  Prf
+    (not
+       (not
+          (imp
+             (not (not (all a (x => not (not (p x))))))
+             (all a (x:(El a) => not (not (not (not (p x)))))))))
+  :=
+  a:Set =>
+  p:((El a) -> Prop) =>
+  imp_i_c
+    (not (not (all a (x => not (not (p x))))))
+    (all a (x:(El a) => not (not (not (not (p x))))))
+    (pNNP:(Prf (not (not (not (not (all a (x => not (not (p x))))))))) =>
+     all_i_c
+       a
+       (x:(El a) => not (not (p x)))
+       (x:(El a) =>
+        neg_i_c
+          (not (p x))
+          (pNP:(Prf (not (not (not (p x))))) =>
+           neg_e_c
+             (not (all a (x0 => not (not (p x0)))))
+             pNNP
+             (neg_i_c
+                (all a (x0 => not (not (p x0))))
+                (pP:(Prf (not (not (all a (x0 => not (not (p x0))))))) =>
+                 neg_e_c (p x) pNP (all_e_c a p pP x)))))).
+
+thm neg_ex1 :
+  a:Set ->
+  p:((El a) -> Prop) ->
+  Prf (not (not (imp (not (ex a p)) (all a (x:(El a) => not (not (not (p x))))))))
+  :=
+  a:Set =>
+  p:((El a) -> Prop) =>
+  imp_i_c
+    (not (ex a p))
+    (all a (x:(El a) => not (not (not (p x)))))
+    (pNP:(Prf (not (not (not (ex a p))))) =>
+     all_i_c
+       a
+       (x:(El a) => not (p x))
+       (x:(El a) =>
+        neg_i_c (p x) (pP:(Prf (not (not (p x)))) => neg_e_c (ex a p) pNP (ex_i_c a p x pP)))).
+
+thm neg_ex2 :
+  a:Set ->
+  p:((El a) -> Prop) ->
+  Prf (not (not (imp (all a (x:(El a) => not (not (not (p x))))) (not (ex a p)))))
+  :=
+  a:Set =>
+  p:((El a) -> Prop) =>
+  imp_i_c
+    (all a (x:(El a) => not (not (not (p x)))))
+    (not (ex a p))
+    (pNP:(Prf (not (not (all a (x:(El a) => not (not (not (p x)))))))) =>
+     neg_i_c
+       (ex a p)
+       (pP:(Prf (not (not (ex a p)))) =>
+        ex_e_c
+          a
+          p
+          pP
+          bot
+          (t:(El a) =>
+           pPt:(Prf (not (not (p t)))) =>
+           neg_e_c (p t) (all_e_c a (x:(El a) => not (p x)) pNP t) pPt))).
+
+thm triple_neg :
+  p:Prop -> Prf (not (not (imp (not (not (not p))) (not p))))
+  :=
+  p:Prop =>
+  imp_i_c
+    (not (not (not p)))
+    (not p)
+    (pNNNP:(Prf (not (not (not (not (not p)))))) =>
+     neg_i_c
+       p
+       (pP:(Prf (not (not p))) =>
+        neg_e_c (not (not p)) pNNNP (imp_e_c p (not (not p)) (double_neg p) pP))).
+
+thm neg_bot :
+  Prf (not (not (imp (not (not bot)) bot)))
+  :=
+  imp_i_c
+    (not (not bot))
+    bot
+    (pB:(Prf (not (not (not (not bot))))) =>
+     neg_e_c (not bot) pB (neg_i_c bot (pN:(Prf (not (not bot))) => pN))).
+
+thm neg_top :
+  Prf (not (not (imp (not (not top)) top)))
+  :=
+  imp_i_c (not (not top)) top (pT:(Prf (not (not (not (not top))))) => top_i_c).
+
+thm neg_iff :
+  p:Prop -> q:Prop -> Prf (not (not (imp (iff (not (not p)) (not (not q))) (not (not (iff p q))))))
+  :=
+  p:Prop =>
+  q:Prop =>
+  imp_i_c
+    (iff (not (not p)) (not (not q)))
+    (not (not (iff p q)))
+    (pH:(Prf (not (not (iff (not (not p)) (not (not q)))))) =>
+     imp_e_c
+       (and (not (not (imp p q))) (not (not (imp q p))))
+       (not (not (and (imp p q) (imp q p))))
+       (neg_and1 (imp p q) (imp q p))
+       (and_i_c
+          (not (not (imp p q)))
+          (imp_e_c
+             (imp (not (not p)) (not (not q)))
+             (not (not (imp p q)))
+             (neg_imp1 p q)
+             (and_el_c (imp (not (not p)) (not (not q))) (imp (not (not q)) (not (not p))) pH))
+          (not (not (imp q p)))
+          (imp_e_c
+             (imp (not (not q)) (not (not p)))
+             (not (not (imp q p)))
+             (neg_imp1 q p)
+             (and_er_c (imp (not (not p)) (not (not q))) (imp (not (not q)) (not (not p))) pH)))).
+
+thm double_neg_elim :
+  A:Prop -> Prf (not (not (imp (not (not A)) A)))
+  :=
+  A:Prop =>
+  imp_i_c
+    (not (not A))
+    A
+    (pNNA:(Prf (not (not (not (not A))))) =>
+     or_e_c
+       A
+       (not A)
+       (excluded_middle_c A)
+       A
+       (pA:(Prf (not (not A))) => pA)
+       (pNA:(Prf (not (not (not A)))) => bot_e_c (neg_e_c (not A) pNNA pNA) A)).
+
+thm double_neg_iff :
+  A:Prop -> Prf (not (not (iff A (not (not A)))))
+  :=
+  A:Prop => and_i_c (imp A (not (not A))) (double_neg A) (imp (not (not A)) A) (double_neg_elim A).
+
+thm absurd :
+  A:Prop -> ((Prf (not (not (not A)))) -> Prf (not (not bot))) -> Prf (not (not A))
+  :=
+  A:Prop =>
+  pNPF:((Prf (not (not (not A)))) -> Prf (not (not bot))) =>
+  imp_e_c (not (not A)) A (double_neg_elim A) (neg_i_c (not A) pNPF).
+
+thm clavius :
+  Prf (not (not (all o (A:(El o) => not (not (imp (imp (not A) A) A))))))
+  :=
+  all_i_c
+    o
+    (A:(El o) => imp (imp (not A) A) A)
+    (A:Prop =>
+     imp_i_c
+       (imp (not A) A)
+       A
+       (pNAA:(Prf (not (not (imp (not A) A)))) =>
+        or_e_c
+          A
+          (not A)
+          (excluded_middle_c A)
+          A
+          (pA:(Prf (not (not A))) => pA)
+          (pNA:(Prf (not (not (not A)))) => imp_e_c (not A) A pNAA pNA))).
+
+thm tarski :
+  Prf (not (not (all o (A:(El o) => not (not (all o (B:(El o) => not (not (or A (imp A B))))))))))
+  :=
+  all_i_c
+    o
+    (A:(El o) => all o (B:(El o) => not (not (or A (imp A B)))))
+    (A:Prop =>
+     all_i_c
+       o
+       (B:(El o) => or A (imp A B))
+       (B:Prop =>
+        or_e_c
+          A
+          (not A)
+          (excluded_middle_c A)
+          (or A (imp A B))
+          (pA:(Prf (not (not A))) => or_il_c A pA (imp A B))
+          (pNA:(Prf (not (not (not A)))) =>
+           or_ir_c
+             A
+             (imp A B)
+             (imp_i_c A B (pA:(Prf (not (not A))) => bot_e_c (neg_e_c A pNA pA) B))))).
+
+thm weak_peirce :
+  Prf (not (not (all o (A:(El o) => not (not (imp (imp (imp A bot) A) A))))))
+  :=
+  all_i_c
+    o
+    (A:(El o) => imp (imp (imp A bot) A) A)
+    (A:Prop =>
+     imp_i_c
+       (imp (imp A bot) A)
+       A
+       (pAFA:(Prf (not (not (imp (imp A bot) A)))) =>
+        or_e_c
+          A
+          (not A)
+          (excluded_middle_c A)
+          A
+          (pA:(Prf (not (not A))) => pA)
+          (pNA:(Prf (not (not (not A)))) =>
+           imp_e_c (imp A bot) A pAFA (imp_i_c A bot (pA:(Prf (not (not A))) => neg_e_c A pNA pA))))).
+
+thm peirce :
+  Prf
+    (not
+       (not
+          (all o (A:(El o) => not (not (all o (B:(El o) => not (not (imp (imp (imp A B) A) A)))))))))
+  :=
+  all_i_c
+    o
+    (A:(El o) => all o (B:(El o) => not (not (imp (imp (imp A B) A) A))))
+    (A:Prop =>
+     all_i_c
+       o
+       (B:(El o) => imp (imp (imp A B) A) A)
+       (B:Prop =>
+        imp_i_c
+          (imp (imp A B) A)
+          A
+          (pABA:(Prf (not (not (imp (imp A B) A)))) =>
+           imp_e_c
+             (imp (imp A bot) A)
+             A
+             (all_e_c o (A1:(El o) => imp (imp (imp A1 bot) A1) A1) weak_peirce A)
+             (imp_i_c
+                (imp A bot)
+                A
+                (pAF:(Prf (not (not (imp A bot)))) =>
+                 imp_e_c
+                   (imp A B)
+                   A
+                   pABA
+                   (imp_i_c A B (pA:(Prf (not (not A))) => bot_e_c (imp_e_c A bot pAF pA) B))))))).
+
+thm linearity :
+  Prf
+    (not
+       (not
+          (all
+             o
+             (A:(El o) =>
+              not
+                (not
+                   (all
+                      o
+                      (B:(El o) =>
+                       not (not (all o (C:(El o) => not (not (or (imp A B) (imp B C)))))))))))))
+  :=
+  all_i_c
+    o
+    (A:(El o) =>
+     all o (B:(El o) => not (not (all o (C:(El o) => not (not (or (imp A B) (imp B C))))))))
+    (A:Prop =>
+     all_i_c
+       o
+       (B:(El o) => all o (C:(El o) => not (not (or (imp A B) (imp B C)))))
+       (B:Prop =>
+        all_i_c
+          o
+          (C:(El o) => or (imp A B) (imp B C))
+          (C:Prop =>
+           or_e_c
+             B
+             (imp B C)
+             (all_e_c
+                o
+                (C1:(El o) => or B (imp B C1))
+                (all_e_c
+                   o
+                   (B1:(El o) => all o (C1:(El o) => not (not (or B1 (imp B1 C1)))))
+                   tarski
+                   B)
+                C)
+             (or (imp A B) (imp B C))
+             (pB:(Prf (not (not B))) =>
+              or_il_c (imp A B) (imp_i_c A B (pA:(Prf (not (not A))) => pB)) (imp B C))
+             (pBC:(Prf (not (not (imp B C)))) => or_ir_c (imp A B) (imp B C) pBC)))).
+
+thm weak_linearity :
+  Prf
+    (not
+       (not (all o (A:(El o) => not (not (all o (B:(El o) => not (not (or (imp A B) (imp B A))))))))))
+  :=
+  all_i_c
+    o
+    (A:(El o) => all o (B:(El o) => not (not (or (imp A B) (imp B A)))))
+    (A:Prop =>
+     all_i_c
+       o
+       (B:(El o) => or (imp A B) (imp B A))
+       (B:Prop =>
+        all_e_c
+          o
+          (C:(El o) => or (imp A B) (imp B C))
+          (all_e_c
+             o
+             (B1:(El o) => all o (C:(El o) => not (not (or (imp A B1) (imp B1 C)))))
+             (all_e_c
+                o
+                (A1:(El o) =>
+                 all
+                   o
+                   (B1:(El o) =>
+                    not (not (all o (C:(El o) => not (not (or (imp A1 B1) (imp B1 C))))))))
+                linearity
+                A)
+             B)
+          A)).
+
+thm weak_excluded_middle_c :
+  Prf (not (not (all o (A:(El o) => not (not (or (not A) (not (not A))))))))
+  :=
+  all_i_c o (A:(El o) => or (not A) (not (not A))) (A:Prop => excluded_middle_c (not A)).
+
+thm non_contradiction :
+  Prf (not (not (all o (A:(El o) => not (not (not (and A (not A))))))))
+  :=
+  all_i_c
+    o
+    (A:(El o) => not (and A (not A)))
+    (A:Prop =>
+     neg_i_c
+       (and A (not A))
+       (pANA:(Prf (not (not (and A (not A))))) =>
+        imp_e_c
+          A
+          bot
+          (imp_i_c A bot (neg_e_c A (and_er_c A (not A) pANA)))
+          (and_el_c A (not A) pANA))).
+
+thm entailment :
+  Prf
+    (not
+       (not (all o (A:(El o) => not (not (all o (B:(El o) => not (not (imp (and A (not A)) B)))))))))
+  :=
+  all_i_c
+    o
+    (A:(El o) => all o (B:(El o) => not (not (imp (and A (not A)) B))))
+    (A:Prop =>
+     all_i_c
+       o
+       (B:(El o) => imp (and A (not A)) B)
+       (B:Prop =>
+        imp_i_c
+          (and A (not A))
+          B
+          (pANA:(Prf (not (not (and A (not A))))) =>
+           bot_e_c
+             (imp_e_c
+                A
+                bot
+                (imp_i_c A bot (neg_e_c A (and_er_c A (not A) pANA)))
+                (and_el_c A (not A) pANA))
+             B))).
+
+thm demorgan_and :
+  A:Prop -> B:Prop -> Prf (not (not (iff (not (and A B)) (or (not A) (not B)))))
+  :=
+  A:Prop =>
+  B:Prop =>
+  and_i_c
+    (imp (not (and A B)) (or (not A) (not B)))
+    (imp_i_c
+       (not (and A B))
+       (or (not A) (not B))
+       (pNAB:(Prf (not (not (not (and A B))))) =>
+        imp_e_c
+          (not (not (or (not A) (not B))))
+          (or (not A) (not B))
+          (double_neg_elim (or (not A) (not B)))
+          (neg_i_c
+             (not (or (not A) (not B)))
+             (pNNANB:(Prf (not (not (not (or (not A) (not B)))))) =>
+              neg_e_c
+                (and A B)
+                pNAB
+                (and_i_c
+                   A
+                   (imp_e_c
+                      (not (not A))
+                      A
+                      (double_neg_elim A)
+                      (neg_i_c
+                         (not A)
+                         (pNA:(Prf (not (not (not A)))) =>
+                          neg_e_c (or (not A) (not B)) pNNANB (or_il_c (not A) pNA (not B)))))
+                   B
+                   (imp_e_c
+                      (not (not B))
+                      B
+                      (double_neg_elim B)
+                      (neg_i_c
+                         (not B)
+                         (pNB:(Prf (not (not (not B)))) =>
+                          neg_e_c (or (not A) (not B)) pNNANB (or_ir_c (not A) (not B) pNB)))))))))
+    (imp (or (not A) (not B)) (not (and A B)))
+    (imp_i_c
+       (or (not A) (not B))
+       (not (and A B))
+       (pNANB:(Prf (not (not (or (not A) (not B))))) =>
+        neg_i_c
+          (and A B)
+          (pAB:(Prf (not (not (and A B)))) =>
+           or_e_c
+             (not A)
+             (not B)
+             pNANB
+             bot
+             (pNA:(Prf (not (not (not A)))) => neg_e_c A pNA (and_el_c A B pAB))
+             (pNB:(Prf (not (not (not B)))) => neg_e_c B pNB (and_er_c A B pAB))))).
+
+thm demorgan_or :
+  A:Prop -> B:Prop -> Prf (not (not (iff (not (or A B)) (and (not A) (not B)))))
+  :=
+  A:Prop =>
+  B:Prop =>
+  and_i_c
+    (imp (not (or A B)) (and (not A) (not B)))
+    (neg_or1 A B)
+    (imp (and (not A) (not B)) (not (or A B)))
+    (neg_or2 A B).
+
+thm demorgan_neg_and :
+  A:Prop -> B:Prop -> Prf (not (not (iff (not (and (not A) (not B))) (or A B))))
+  :=
+  A:Prop =>
+  B:Prop =>
+  iff_trans_rule
+    (not (and (not A) (not B)))
+    (or (not (not A)) (not (not B)))
+    (or A B)
+    (demorgan_and (not A) (not B))
+    (iff_or
+       (not (not A))
+       A
+       (not (not B))
+       B
+       (iff_sym_rule A (not (not A)) (double_neg_iff A))
+       (iff_sym_rule B (not (not B)) (double_neg_iff B))).
+
+thm demorgan_neg_or :
+  A:Prop -> B:Prop -> Prf (not (not (iff (not (or (not A) (not B))) (and A B))))
+  :=
+  A:Prop =>
+  B:Prop =>
+  iff_trans_rule
+    (not (or (not A) (not B)))
+    (and (not (not A)) (not (not B)))
+    (and A B)
+    (demorgan_or (not A) (not B))
+    (iff_and
+       (not (not A))
+       A
+       (not (not B))
+       B
+       (iff_sym_rule A (not (not A)) (double_neg_iff A))
+       (iff_sym_rule B (not (not B)) (double_neg_iff B))).
+
+thm demorgan_all_c :
+  a:Set ->
+  p:((El a) -> Prop) ->
+  Prf (not (not (iff (not (all a (x => not (not (p x))))) (ex a (x:(El a) => not (p x))))))
+  :=
+  a:Set =>
+  p:((El a) -> Prop) =>
+  and_i_c
+    (imp (not (all a (x => not (not (p x))))) (ex a (x:(El a) => not (p x))))
+    (imp_i_c
+       (not (all a (x => not (not (p x)))))
+       (ex a (x:(El a) => not (p x)))
+       (pNFP:(Prf (not (not (not (all a (x => not (not (p x)))))))) =>
+        imp_e_c
+          (not (not (ex a (x:(El a) => not (p x)))))
+          (ex a (x:(El a) => not (p x)))
+          (double_neg_elim (ex a (x:(El a) => not (p x))))
+          (neg_i_c
+             (not (ex a (x:(El a) => not (p x))))
+             (pNENP:(Prf (not (not (not (ex a (x:(El a) => not (p x))))))) =>
+              neg_e_c
+                (all a (x => not (not (p x))))
+                pNFP
+                (all_i_c
+                   a
+                   p
+                   (t:(El a) =>
+                    imp_e_c
+                      (not (not (p t)))
+                      (p t)
+                      (double_neg_elim (p t))
+                      (neg_i_c
+                         (not (p t))
+                         (pNPt:(Prf (not (not (not (p t))))) =>
+                          neg_e_c
+                            (ex a (x:(El a) => not (p x)))
+                            pNENP
+                            (ex_i_c a (x:(El a) => not (p x)) t pNPt)))))))))
+    (imp (ex a (x:(El a) => not (p x))) (not (all a (x => not (not (p x))))))
+    (imp_i_c
+       (ex a (x:(El a) => not (p x)))
+       (not (all a (x => not (not (p x)))))
+       (pENP:(Prf (not (not (ex a (x:(El a) => not (p x)))))) =>
+        neg_i_c
+          (all a (x => not (not (p x))))
+          (pFP:(Prf (not (not (all a (x => not (not (p x))))))) =>
+           ex_e_c
+             a
+             (x:(El a) => not (p x))
+             pENP
+             bot
+             (t:(El a) =>
+              pNPt:(Prf (not (not (not (p t))))) => neg_e_c (p t) pNPt (all_e_c a p pFP t))))).
+
+thm demorgan_ex :
+  a:Set ->
+  p:((El a) -> Prop) ->
+  Prf (not (not (iff (not (ex a p)) (all a (x:(El a) => not (not (not (p x))))))))
+  :=
+  a:Set =>
+  p:((El a) -> Prop) =>
+  and_i_c
+    (imp (not (ex a p)) (all a (x:(El a) => not (not (not (p x))))))
+    (neg_ex1 a p)
+    (imp (all a (x:(El a) => not (not (not (p x))))) (not (ex a p)))
+    (neg_ex2 a p).
+
+thm demorgan_neg_all_c :
+  a:Set ->
+  p:((El a) -> Prop) ->
+  Prf (not (not (iff (not (all a (x:(El a) => not (not (not (p x)))))) (ex a p))))
+  :=
+  a:Set =>
+  p:((El a) -> Prop) =>
+  iff_trans_rule
+    (not (all a (x:(El a) => not (not (not (p x))))))
+    (ex a (x:(El a) => not (not (p x))))
+    (ex a p)
+    (demorgan_all_c a (x:(El a) => not (p x)))
+    (iff_ex
+       a
+       (x:(El a) => not (not (p x)))
+       p
+       (x:(El a) => iff_sym_rule (p x) (not (not (p x))) (double_neg_iff (p x)))).
+
+thm demorgan_neg_ex :
+  a:Set ->
+  p:((El a) -> Prop) ->
+  Prf (not (not (iff (not (ex a (x:(El a) => not (p x)))) (all a (x => not (not (p x)))))))
+  :=
+  a:Set =>
+  p:((El a) -> Prop) =>
+  iff_trans_rule
+    (not (ex a (x:(El a) => not (p x))))
+    (all a (x:(El a) => not (not (not (not (p x))))))
+    (all a (x => not (not (p x))))
+    (demorgan_ex a (x:(El a) => not (p x)))
+    (iff_all_c
+       a
+       (x:(El a) => not (not (p x)))
+       p
+       (x:(El a) => iff_sym_rule (p x) (not (not (p x))) (double_neg_iff (p x)))).
+
+def eq : a:Set -> (El a) -> (El a) -> Prop.
+
+[y, x, a]
+  Prf (not (not (eq a x y)))
+  -->
+  P:((El a) -> Prop) -> (Prf (not (not (P x)))) -> Prf (not (not (P y))).
+
+thm eq_refl_rule :
+  a:Set -> x:(El a) -> Prf (not (not (eq a x x)))
+  :=
+  a:Set => x:(El a) => P:((El a) -> Prop) => Py:(Prf (not (not (P x)))) => Py.
+
+thm eq_refl :
+  a:Set -> Prf (not (not (all a (x:(El a) => not (not (eq a x x))))))
+  :=
+  a:Set => all_i_c a (x:(El a) => eq a x x) (x:(El a) => eq_refl_rule a x).
+
+thm eq_sym_rule :
+  a:Set -> x:(El a) -> y:(El a) -> (Prf (not (not (eq a x y)))) -> Prf (not (not (eq a y x)))
+  :=
+  a:Set =>
+  x:(El a) =>
+  y:(El a) =>
+  Pxy:(Prf (not (not (eq a x y)))) =>
+  P:((El a) -> Prop) =>
+  imp_e_c
+    (P y)
+    (P x)
+    (Pxy (z:(El a) => imp (P z) (P x)) (imp_i_c (P x) (P x) (Px:(Prf (not (not (P x)))) => Px))).
+
+thm eq_sym :
+  a:Set ->
+  Prf
+    (not
+       (not
+          (all
+             a
+             (x:(El a) => not (not (all a (y:(El a) => not (not (imp (eq a x y) (eq a y x))))))))))
+  :=
+  a:Set =>
+  all_i_c
+    a
+    (x:(El a) => all a (y:(El a) => not (not (imp (eq a x y) (eq a y x)))))
+    (x:(El a) =>
+     all_i_c
+       a
+       (y:(El a) => imp (eq a x y) (eq a y x))
+       (y:(El a) => imp_i_c (eq a x y) (eq a y x) (eq_sym_rule a x y))).
+
+thm eq_trans_rule :
+  a:Set ->
+  x:(El a) ->
+  y:(El a) ->
+  z:(El a) ->
+  (Prf (not (not (eq a x y)))) -> (Prf (not (not (eq a y z)))) -> Prf (not (not (eq a x z)))
+  :=
+  a:Set =>
+  x:(El a) =>
+  y:(El a) =>
+  z:(El a) =>
+  Pxy:(Prf (not (not (eq a x y)))) =>
+  Pyz:(Prf (not (not (eq a y z)))) =>
+  P:((El a) -> Prop) => Px:(Prf (not (not (P x)))) => Pyz P (Pxy P Px).
+
+thm eq_trans :
+  a:Set ->
+  Prf
+    (not
+       (not
+          (all
+             a
+             (x:(El a) =>
+              not
+                (not
+                   (all
+                      a
+                      (y:(El a) =>
+                       not
+                         (not
+                            (all
+                               a
+                               (z:(El a) =>
+                                not (not (imp (and (eq a x y) (eq a y z)) (eq a x z)))))))))))))
+  :=
+  a:Set =>
+  all_i_c
+    a
+    (x:(El a) =>
+     all
+       a
+       (y:(El a) =>
+        not (not (all a (z:(El a) => not (not (imp (and (eq a x y) (eq a y z)) (eq a x z))))))))
+    (x:(El a) =>
+     all_i_c
+       a
+       (y:(El a) => all a (z:(El a) => not (not (imp (and (eq a x y) (eq a y z)) (eq a x z)))))
+       (y:(El a) =>
+        all_i_c
+          a
+          (z:(El a) => imp (and (eq a x y) (eq a y z)) (eq a x z))
+          (z:(El a) =>
+           imp_i_c
+             (and (eq a x y) (eq a y z))
+             (eq a x z)
+             (Pxyz:(Prf (not (not (and (eq a x y) (eq a y z))))) =>
+              eq_trans_rule
+                a
+                x
+                y
+                z
+                (and_el_c (eq a x y) (eq a y z) Pxyz)
+                (and_er_c (eq a x y) (eq a y z) Pxyz))))).
+
+thm eq_fun_rule :
+  a:Set ->
+  b:Set ->
+  f:((El a) -> El b) ->
+  x:(El a) -> y:(El a) -> (Prf (not (not (eq a x y)))) -> Prf (not (not (eq b (f x) (f y))))
+  :=
+  a:Set =>
+  b:Set =>
+  f:((El a) -> El b) =>
+  x:(El a) =>
+  y:(El a) => Pxy:(Prf (not (not (eq a x y)))) => P:((El b) -> Prop) => Pxy (w:(El a) => P (f w)).
+
+thm eq_fun :
+  a:Set ->
+  b:Set ->
+  Prf
+    (not
+       (not
+          (all
+             (fun a b)
+             (f:((El a) -> El b) =>
+              not
+                (not
+                   (all
+                      a
+                      (x:(El a) =>
+                       not
+                         (not
+                            (all
+                               a
+                               (y:(El a) => not (not (imp (eq a x y) (eq b (f x) (f y))))))))))))))
+  :=
+  a:Set =>
+  b:Set =>
+  all_i_c
+    (fun a b)
+    (f:((El a) -> El b) =>
+     all
+       a
+       (x:(El a) => not (not (all a (y:(El a) => not (not (imp (eq a x y) (eq b (f x) (f y)))))))))
+    (f:((El a) -> El b) =>
+     all_i_c
+       a
+       (x:(El a) => all a (y:(El a) => not (not (imp (eq a x y) (eq b (f x) (f y))))))
+       (x:(El a) =>
+        all_i_c
+          a
+          (y:(El a) => imp (eq a x y) (eq b (f x) (f y)))
+          (y:(El a) =>
+           imp_i_c
+             (eq a x y)
+             (eq b (f x) (f y))
+             (Pxy:(Prf (not (not (eq a x y)))) => eq_fun_rule a b f x y Pxy)))).
+
+thm eq_fun2 :
+  a1:Set ->
+  a2:Set ->
+  b:Set ->
+  Prf
+    (not
+       (not
+          (all
+             (fun a1 (fun a2 b))
+             (f:((El a1) -> (El a2) -> El b) =>
+              not
+                (not
+                   (all
+                      a1
+                      (x1:(El a1) =>
+                       not
+                         (not
+                            (all
+                               a2
+                               (x2:(El a2) =>
+                                not
+                                  (not
+                                     (all
+                                        a1
+                                        (y1:(El a1) =>
+                                         not
+                                           (not
+                                              (all
+                                                 a2
+                                                 (y2:(El a2) =>
+                                                  not
+                                                    (not
+                                                       (imp
+                                                          (eq a1 x1 y1)
+                                                          (imp
+                                                             (eq a2 x2 y2)
+                                                             (eq
+                                                                b
+                                                                (f x1 x2)
+                                                                (f y1 y2)))))))))))))))))))))
+  :=
+  a1:Set =>
+  a2:Set =>
+  b:Set =>
+  all_i_c
+    (fun a1 (fun a2 b))
+    (f:((El a1) -> (El a2) -> El b) =>
+     all
+       a1
+       (x1:(El a1) =>
+        not
+          (not
+             (all
+                a2
+                (x2:(El a2) =>
+                 not
+                   (not
+                      (all
+                         a1
+                         (y1:(El a1) =>
+                          not
+                            (not
+                               (all
+                                  a2
+                                  (y2:(El a2) =>
+                                   not
+                                     (not
+                                        (imp
+                                           (eq a1 x1 y1)
+                                           (imp (eq a2 x2 y2) (eq b (f x1 x2) (f y1 y2))))))))))))))))
+    (f:((El a1) -> (El a2) -> El b) =>
+     all_i_c
+       a1
+       (x1:(El a1) =>
+        all
+          a2
+          (x2:(El a2) =>
+           not
+             (not
+                (all
+                   a1
+                   (y1:(El a1) =>
+                    not
+                      (not
+                         (all
+                            a2
+                            (y2:(El a2) =>
+                             not
+                               (not
+                                  (imp
+                                     (eq a1 x1 y1)
+                                     (imp (eq a2 x2 y2) (eq b (f x1 x2) (f y1 y2)))))))))))))
+       (x1:(El a1) =>
+        all_i_c
+          a2
+          (x2:(El a2) =>
+           all
+             a1
+             (y1:(El a1) =>
+              not
+                (not
+                   (all
+                      a2
+                      (y2:(El a2) =>
+                       not
+                         (not
+                            (imp (eq a1 x1 y1) (imp (eq a2 x2 y2) (eq b (f x1 x2) (f y1 y2))))))))))
+          (x2:(El a2) =>
+           all_i_c
+             a1
+             (y1:(El a1) =>
+              all
+                a2
+                (y2:(El a2) =>
+                 not (not (imp (eq a1 x1 y1) (imp (eq a2 x2 y2) (eq b (f x1 x2) (f y1 y2)))))))
+             (y1:(El a1) =>
+              all_i_c
+                a2
+                (y2:(El a2) => imp (eq a1 x1 y1) (imp (eq a2 x2 y2) (eq b (f x1 x2) (f y1 y2))))
+                (y2:(El a2) =>
+                 imp_i_c
+                   (eq a1 x1 y1)
+                   (imp (eq a2 x2 y2) (eq b (f x1 x2) (f y1 y2)))
+                   (Pxy1:(Prf (not (not (eq a1 x1 y1)))) =>
+                    imp_i_c
+                      (eq a2 x2 y2)
+                      (eq b (f x1 x2) (f y1 y2))
+                      (Pxy2:(Prf (not (not (eq a2 x2 y2)))) =>
+                       P:((El b) -> Prop) =>
+                       Pfx:(Prf (not (not (P (f x1 x2))))) =>
+                       Pxy1 (w:(El a1) => P (f w y2)) (Pxy2 (w:(El a2) => P (f x1 w)) Pfx)))))))).
+
+thm eq_comp :
+  a:Set ->
+  b:Set ->
+  c:Set ->
+  Prf
+    (not
+       (not
+          (all
+             (fun b c)
+             (f:((El b) -> El c) =>
+              not
+                (not
+                   (all
+                      (fun a b)
+                      (g:((El a) -> El b) =>
+                       not
+                         (not
+                            (all
+                               a
+                               (x:(El a) =>
+                                not
+                                  (not
+                                     (all
+                                        a
+                                        (y:(El a) =>
+                                         not
+                                           (not
+                                              (imp
+                                                 (eq a x y)
+                                                 (eq c (f (g x)) (f (g y))))))))))))))))))
+  :=
+  a:Set =>
+  b:Set =>
+  c:Set =>
+  all_i_c
+    (fun b c)
+    (f:((El b) -> El c) =>
+     all
+       (fun a b)
+       (g:((El a) -> El b) =>
+        not
+          (not
+             (all
+                a
+                (x:(El a) =>
+                 not
+                   (not
+                      (all
+                         a
+                         (y:(El a) => not (not (imp (eq a x y) (eq c (f (g x)) (f (g y)))))))))))))
+    (f:((El b) -> El c) =>
+     all_i_c
+       (fun a b)
+       (g:((El a) -> El b) =>
+        all
+          a
+          (x:(El a) =>
+           not (not (all a (y:(El a) => not (not (imp (eq a x y) (eq c (f (g x)) (f (g y))))))))))
+       (g:((El a) -> El b) =>
+        all_e_c
+          (fun a c)
+          (f1:((El a) -> El c) =>
+           all
+             a
+             (x:(El a) =>
+              not (not (all a (y:(El a) => not (not (imp (eq a x y) (eq c (f1 x) (f1 y)))))))))
+          (eq_fun a c)
+          (w:(El a) => f (g w)))).
+
+nat : Set.
+
+0 : El nat.
+
+def S : (El nat) -> El nat.
+
+def add : (El nat) -> (El nat) -> El nat.
+
+def mult : (El nat) -> (El nat) -> El nat.
+
+[x, a] eq a (S x) (0) --> bot.
+
+[y, x] eq (nat) (S x) (S y) --> eq nat x y.
+
+[x] add x (0) --> x.
+
+[y, x] add x (S y) --> S (add x y).
+
+[x] mult x (0) --> 0.
+
+[y, x] mult x (S y) --> add (mult x y) x.
+
+induction_axiom :
+  Prf
+    (not
+       (not
+          (all
+             (fun nat o)
+             (P:(El (fun nat o)) =>
+              not
+                (not
+                   (imp
+                      (and (P 0) (all nat (n:(El nat) => not (not (imp (P n) (P (S n)))))))
+                      (all nat (n:(El nat) => not (not (P n)))))))))).
+
+thm induction_rule :
+  P:((El nat) -> Prop) ->
+  (Prf (not (not (P 0)))) ->
+  (n:(El nat) -> (Prf (not (not (P n)))) -> Prf (not (not (P (S n))))) ->
+  Prf (not (not (all nat (n:(El nat) => not (not (P n))))))
+  :=
+  P:((El nat) -> Prop) =>
+  H0:(Prf (not (not (P 0)))) =>
+  IH:(n:(El nat) -> (Prf (not (not (P n)))) -> Prf (not (not (P (S n))))) =>
+  imp_e_c
+    (and (P 0) (all nat (n:(El nat) => not (not (imp (P n) (P (S n)))))))
+    (all nat (n:(El nat) => not (not (P n))))
+    (all_e_c
+       (fun nat o)
+       (P1:(El (fun nat o)) =>
+        imp
+          (and (P1 0) (all nat (n:(El nat) => not (not (imp (P1 n) (P1 (S n)))))))
+          (all nat (n:(El nat) => not (not (P1 n)))))
+       induction_axiom
+       P)
+    (and_i_c
+       (P 0)
+       H0
+       (all nat (n:(El nat) => not (not (imp (P n) (P (S n))))))
+       (all_i_c
+          nat
+          (n:(El nat) => imp (P n) (P (S n)))
+          (m:(El nat) => imp_i_c (P m) (P (S m)) (IH m)))).
+
+thm add_nZ :
+  Prf (not (not (all nat (n:(El nat) => not (not (eq nat (add n 0) n))))))
+  :=
+  eq_refl nat.
+
+thm add_Zn :
+  Prf (not (not (all nat (n:(El nat) => not (not (eq nat (add 0 n) n))))))
+  :=
+  induction_rule
+    (n:(El nat) => eq nat (add 0 n) n)
+    (eq_refl_rule nat 0)
+    (n:(El nat) => pPn:(Prf (not (not (eq nat (add 0 n) n)))) => pPn).
+
+thm add_Sn :
+  Prf
+    (not
+       (not
+          (all
+             nat
+             (n:(El nat) =>
+              not (not (all nat (m:(El nat) => not (not (eq nat (add (S n) m) (S (add n m)))))))))))
+  :=
+  induction_rule
+    (n:(El nat) => all nat (m:(El nat) => not (not (eq nat (add (S n) m) (S (add n m))))))
+    (induction_rule
+       (m:(El nat) => eq nat (add (S 0) m) (S (add 0 m)))
+       (eq_refl_rule nat (S 0))
+       (m:(El nat) => pPm:(Prf (not (not (eq nat (add (S 0) m) (S (add 0 m)))))) => pPm))
+    (n:(El nat) =>
+     pPn:(Prf (not (not (all nat (m:(El nat) => not (not (eq nat (add (S n) m) (S (add n m))))))))) =>
+     induction_rule
+       (m:(El nat) => eq nat (add (S (S n)) m) (S (add (S n) m)))
+       (eq_refl_rule nat (S n))
+       (m:(El nat) => pPm:(Prf (not (not (eq nat (add (S (S n)) m) (S (add (S n) m)))))) => pPm)).
+
+thm add_assoc :
+  Prf
+    (not
+       (not
+          (all
+             nat
+             (n:(El nat) =>
+              not
+                (not
+                   (all
+                      nat
+                      (m:(El nat) =>
+                       not
+                         (not
+                            (all
+                               nat
+                               (p:(El nat) =>
+                                not (not (eq nat (add (add n m) p) (add n (add m p))))))))))))))
+  :=
+  all_i_c
+    nat
+    (n:(El nat) =>
+     all
+       nat
+       (m:(El nat) =>
+        not (not (all nat (p:(El nat) => not (not (eq nat (add (add n m) p) (add n (add m p)))))))))
+    (n:(El nat) =>
+     all_i_c
+       nat
+       (m:(El nat) => all nat (p:(El nat) => not (not (eq nat (add (add n m) p) (add n (add m p))))))
+       (m:(El nat) =>
+        induction_rule
+          (p:(El nat) => eq nat (add (add n m) p) (add n (add m p)))
+          (eq_refl_rule nat (add n m))
+          (p:(El nat) =>
+           pPp:(Prf (not (not (eq nat (add (add n m) p) (add n (add m p)))))) =>
+           eq_fun_rule nat nat (w:(El nat) => S w) (add (add n m) p) (add n (add m p)) pPp))).
+
+thm add_assoc_rule :
+  n:(El nat) ->
+  m:(El nat) -> p:(El nat) -> Prf (not (not (eq nat (add (add n m) p) (add n (add m p)))))
+  :=
+  n:(El nat) =>
+  m:(El nat) =>
+  p:(El nat) =>
+  all_e_c
+    nat
+    (p1:(El nat) => eq nat (add (add n m) p1) (add n (add m p1)))
+    (all_e_c
+       nat
+       (m1:(El nat) =>
+        all nat (p1:(El nat) => not (not (eq nat (add (add n m1) p1) (add n (add m1 p1))))))
+       (all_e_c
+          nat
+          (n1:(El nat) =>
+           all
+             nat
+             (m1:(El nat) =>
+              not
+                (not
+                   (all
+                      nat
+                      (p1:(El nat) =>
+                       not (not (eq nat (add (add n1 m1) p1) (add n1 (add m1 p1)))))))))
+          add_assoc
+          n)
+       m)
+    p.
+
+thm add_comm :
+  Prf
+    (not
+       (not
+          (all
+             nat
+             (n:(El nat) =>
+              not (not (all nat (m:(El nat) => not (not (eq nat (add n m) (add m n))))))))))
+  :=
+  induction_rule
+    (n:(El nat) => all nat (m:(El nat) => not (not (eq nat (add n m) (add m n)))))
+    add_Zn
+    (n:(El nat) =>
+     pPn:(Prf (not (not (all nat (m:(El nat) => not (not (eq nat (add n m) (add m n)))))))) =>
+     all_i_c
+       nat
+       (m:(El nat) => eq nat (add (S n) m) (add m (S n)))
+       (m:(El nat) =>
+        eq_trans_rule
+          nat
+          (add (S n) m)
+          (S (add n m))
+          (add m (S n))
+          (all_e_c
+             nat
+             (m1:(El nat) => eq nat (add (S n) m1) (S (add n m1)))
+             (all_e_c
+                nat
+                (n1:(El nat) =>
+                 all nat (m1:(El nat) => not (not (eq nat (add (S n1) m1) (S (add n1 m1))))))
+                add_Sn
+                n)
+             m)
+          (eq_fun_rule
+             nat
+             nat
+             S
+             (add n m)
+             (add m n)
+             (all_e_c nat (m1:(El nat) => eq nat (add n m1) (add m1 n)) pPn m)))).
+
+thm add_comm_rule :
+  n:(El nat) -> m:(El nat) -> Prf (not (not (eq nat (add n m) (add m n))))
+  :=
+  n:(El nat) =>
+  m:(El nat) =>
+  all_e_c
+    nat
+    (m1:(El nat) => eq nat (add n m1) (add m1 n))
+    (all_e_c
+       nat
+       (n1:(El nat) => all nat (m1:(El nat) => not (not (eq nat (add n1 m1) (add m1 n1)))))
+       add_comm
+       n)
+    m.
+
+thm mult_nZ :
+  Prf (not (not (all nat (n:(El nat) => not (not (eq nat (mult n 0) 0))))))
+  :=
+  all_i_c nat (n:(El nat) => eq nat (mult n 0) 0) (n:(El nat) => eq_refl_rule nat 0).
+
+thm mult_Zn :
+  Prf (not (not (all nat (n:(El nat) => not (not (eq nat (mult 0 n) 0))))))
+  :=
+  induction_rule
+    (n:(El nat) => eq nat (mult 0 n) 0)
+    (eq_refl_rule nat 0)
+    (n:(El nat) => pPn:(Prf (not (not (eq nat (mult 0 n) 0)))) => pPn).
+
+thm mult_Sn :
+  Prf
+    (not
+       (not
+          (all
+             nat
+             (n:(El nat) =>
+              not
+                (not
+                   (all nat (m:(El nat) => not (not (eq nat (mult (S n) m) (add (mult n m) m))))))))))
+  :=
+  induction_rule
+    (n:(El nat) => all nat (m:(El nat) => not (not (eq nat (mult (S n) m) (add (mult n m) m)))))
+    (induction_rule
+       (m:(El nat) => eq nat (mult (S 0) m) (add (mult 0 m) m))
+       (eq_refl_rule nat 0)
+       (m:(El nat) => pPm:(Prf (not (not (eq nat (mult (S 0) m) (add (mult 0 m) m))))) => pPm))
+    (n:(El nat) =>
+     pPn:(Prf
+            (not
+               (not
+                  (all nat (m:(El nat) => not (not (eq nat (mult (S n) m) (add (mult n m) m)))))))) =>
+     induction_rule
+       (m:(El nat) => eq nat (mult (S (S n)) m) (add (mult (S n) m) m))
+       (eq_refl_rule nat 0)
+       (m:(El nat) =>
+        pPm:(Prf (not (not (eq nat (mult (S (S n)) m) (add (mult (S n) m) m))))) =>
+        eq_sym_rule
+          nat
+          (add (add (mult (S n) m) (S n)) m)
+          (add (mult (S n) m) (add (S n) m))
+          (add_assoc_rule (mult (S n) m) (S n) m)
+          (w:(El nat) => eq nat (mult (S (S n)) (S m)) (S w))
+          (add_comm_rule
+             m
+             (S n)
+             (w:(El nat) => eq nat (mult (S (S n)) (S m)) (S (add (mult (S n) m) w)))
+             (eq_trans_rule
+                nat
+                (mult (S (S n)) (S m))
+                (S (add (mult (S n) m) (add m (S n))))
+                (S (add (mult (S n) m) (S (add m n))))
+                (eq_trans_rule
+                   nat
+                   (mult (S (S n)) (S m))
+                   (S (add (add (mult (S n) m) m) (S n)))
+                   (S (add (mult (S n) m) (add m (S n))))
+                   (eq_fun_rule
+                      nat
+                      nat
+                      (w:(El nat) => add w (S (S n)))
+                      (mult (S (S n)) m)
+                      (add (mult (S n) m) m)
+                      pPm)
+                   (eq_fun_rule
+                      nat
+                      nat
+                      (w:(El nat) => S w)
+                      (add (add (mult (S n) m) m) (S n))
+                      (add (mult (S n) m) (add m (S n)))
+                      (add_assoc_rule (mult (S n) m) m (S n))))
+                (eq_refl_rule nat (S (add (mult (S n) m) (add m (S n))))))))).
+
+thm mult_comm :
+  Prf
+    (not
+       (not
+          (all
+             nat
+             (n:(El nat) =>
+              not (not (all nat (m:(El nat) => not (not (eq nat (mult n m) (mult m n))))))))))
+  :=
+  induction_rule
+    (n:(El nat) => all nat (m:(El nat) => not (not (eq nat (mult n m) (mult m n)))))
+    mult_Zn
+    (n:(El nat) =>
+     pPn:(Prf (not (not (all nat (m:(El nat) => not (not (eq nat (mult n m) (mult m n)))))))) =>
+     all_i_c
+       nat
+       (m:(El nat) => eq nat (mult (S n) m) (mult m (S n)))
+       (m:(El nat) =>
+        eq_trans_rule
+          nat
+          (mult (S n) m)
+          (add (mult n m) m)
+          (mult m (S n))
+          (all_e_c
+             nat
+             (m1:(El nat) => eq nat (mult (S n) m1) (add (mult n m1) m1))
+             (all_e_c
+                nat
+                (n1:(El nat) =>
+                 all
+                   nat
+                   (m1:(El nat) => not (not (eq nat (mult (S n1) m1) (add (mult n1 m1) m1)))))
+                mult_Sn
+                n)
+             m)
+          (eq_fun_rule
+             nat
+             nat
+             (w:(El nat) => add w m)
+             (mult n m)
+             (mult m n)
+             (all_e_c nat (m1:(El nat) => eq nat (mult n m1) (mult m1 n)) pPn m)))).
+
+thm mult_comm_rule :
+  n:(El nat) -> m:(El nat) -> Prf (not (not (eq nat (mult n m) (mult m n))))
+  :=
+  n:(El nat) =>
+  m:(El nat) =>
+  all_e_c
+    nat
+    (m1:(El nat) => eq nat (mult n m1) (mult m1 n))
+    (all_e_c
+       nat
+       (n1:(El nat) => all nat (m1:(El nat) => not (not (eq nat (mult n1 m1) (mult m1 n1)))))
+       mult_comm
+       n)
+    m.
+
+thm Z_pred :
+  Prf
+    (not
+       (not
+          (all
+             nat
+             (n:(El nat) => not (not (or (eq nat n 0) (ex nat (m:(El nat) => eq nat n (S m)))))))))
+  :=
+  induction_rule
+    (n:(El nat) => or (eq nat n 0) (ex nat (m:(El nat) => eq nat n (S m))))
+    (or_il_c (eq nat 0 0) (eq_refl_rule nat 0) (ex nat (m:(El nat) => eq nat 0 (S m))))
+    (n:(El nat) =>
+     pPn:(Prf (not (not (or (eq nat n 0) (ex nat (m:(El nat) => eq nat n (S m))))))) =>
+     or_ir_c
+       (eq nat (S n) 0)
+       (ex nat (m:(El nat) => eq nat (S n) (S m)))
+       (or_e_c
+          (eq nat n 0)
+          (ex nat (m:(El nat) => eq nat n (S m)))
+          pPn
+          (ex nat (m:(El nat) => eq nat (S n) (S m)))
+          (pZ:(Prf (not (not (eq nat n 0)))) =>
+           ex_i_c
+             nat
+             (m:(El nat) => eq nat (S n) (S m))
+             0
+             (eq_fun_rule nat nat (w:(El nat) => S w) n 0 pZ))
+          (pEm:(Prf (not (not (ex nat (m:(El nat) => eq nat n (S m)))))) =>
+           ex_e_c
+             nat
+             (m:(El nat) => eq nat n (S m))
+             pEm
+             (ex nat (m:(El nat) => eq nat (S n) (S m)))
+             (t:(El nat) =>
+              pSt:(Prf (not (not (eq nat n (S t))))) =>
+              ex_i_c
+                nat
+                (m:(El nat) => eq nat (S n) (S m))
+                (S t)
+                (eq_fun_rule nat nat (w:(El nat) => S w) n (S t) pSt))))).
+
