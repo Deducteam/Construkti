@@ -1,0 +1,4 @@
+(lang dune 3.14)
+(name construkti)
+(sections (lib .) (bin ../../bin) (doc ../../doc/construkti))
+(files (lib (META dune-package opam)) (bin (construkti)) (doc (README.md)))

@@ -2,7 +2,7 @@
 
 [Dedukti](https://github.com/Deducteam/Dedukti) is a proof language based on the λΠ-calculus modulo theory, that is λ-calculus with dependent types and user-defined rewrite rules.
 
-Kuroda's translation adds double negations in front of each formulas and after each universal quanftifiers. A formula admits a classical proofs if and only if its Kuroda's translation admits an intuitionistic proof.
+Kuroda's translation adds double negations in front of each formulas and after each universal quanftifiers. A formula admits a classical proofs if and only if the translated formula admits an intuitionistic proof.
 
 This tool applies Kuroda's translation to Dedukti proofs written using natural deduction. It takes as input classical proofs, and returns the intuitionistic proofs of the translated theorems.
 
@@ -26,7 +26,9 @@ git clone https://github.com/thomastraversie/construkti/
 cd construkti
 ```
 
-- Write your proofs only using the connectors, quantifiers, and natural deduction rules presented in `logic.dk`. If you want to translate the Dedukti file `file.dk` such that the concatenation of `logic.dk` and `file.dk` typechecks, run 
+- Write your proofs only using the connectors, quantifiers, and natural deduction rules presented in `logic.dk`. 
+
+If you want to translate the Dedukti file `file.dk` such that the concatenation of `logic.dk` and `file.dk` typechecks, run 
 ```
 bash translate.sh file.dk
 ```
@@ -35,4 +37,4 @@ The translated proofs are displayed in the file `file_c.dk`.
 
 ### Benchmark
 
-You can test Construkti on `hol-lib.dk`, that contains the proofs of theorems in propositional, first-order and higher-order logics, including classical theorems. After translation, `hol-lib_c.dk` only contains intuitionistic proofs.
+You can test Construkti on `hol-lib.dk`, that contain the proofs of theorems in propositional, first-order and higher-order logics, including classical theorems. After translation, `hol-lib_c.dk` only contain intuitionistic proofs.
