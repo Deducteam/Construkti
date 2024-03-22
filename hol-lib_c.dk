@@ -250,7 +250,7 @@ thm ex_e_c : a : Set -> p : (El a -> Prop) -> Prf (not (not (ex a p))) -> r : Pr
                 (prop_neg_elim2 a p))
             pP)).
 
-thm excluded_middle_c : p : Prop -> Prf (not (not (or p (not p))))
+thm pem_c : p : Prop -> Prf (not (not (or p (not p))))
 := p => neg_i (not (or p (not p))) 
     (pNPNP => neg_e (or p (not p)) pNPNP 
         (or_ir p (not p) 
@@ -1267,7 +1267,7 @@ thm double_neg_elim :
      or_e_c
        A
        (not A)
-       (excluded_middle_c A)
+       (pem_c A)
        A
        (pA:(Prf (not (not A))) => pA)
        (pNA:(Prf (not (not (not A)))) => bot_e_c (neg_e_c (not A) pNNA pNA) A)).
@@ -1298,7 +1298,7 @@ thm clavius :
         or_e_c
           A
           (not A)
-          (excluded_middle_c A)
+          (pem_c A)
           A
           (pA:(Prf (not (not A))) => pA)
           (pNA:(Prf (not (not (not A)))) => imp_e_c (not A) A pNAA pNA))).
@@ -1317,7 +1317,7 @@ thm tarski :
         or_e_c
           A
           (not A)
-          (excluded_middle_c A)
+          (pem_c A)
           (or A (imp A B))
           (pA:(Prf (not (not A))) => or_il_c A pA (imp A B))
           (pNA:(Prf (not (not (not A)))) =>
@@ -1340,7 +1340,7 @@ thm weak_peirce :
         or_e_c
           A
           (not A)
-          (excluded_middle_c A)
+          (pem_c A)
           A
           (pA:(Prf (not (not A))) => pA)
           (pNA:(Prf (not (not (not A)))) =>
@@ -1453,10 +1453,10 @@ thm weak_linearity :
              B)
           A)).
 
-thm weak_excluded_middle_c :
+thm weak_pem_c :
   Prf (not (not (all o (A:(El o) => not (not (or (not A) (not (not A))))))))
   :=
-  all_i_c o (A:(El o) => or (not A) (not (not A))) (A:Prop => excluded_middle_c (not A)).
+  all_i_c o (A:(El o) => or (not A) (not (not A))) (A:Prop => pem_c (not A)).
 
 thm non_contradiction :
   Prf (not (not (all o (A:(El o) => not (not (not (and A (not A))))))))

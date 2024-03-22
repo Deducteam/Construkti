@@ -250,7 +250,7 @@ thm ex_e_c : a : Set -> p : (El a -> Prop) -> Prf (not (not (ex a p))) -> r : Pr
                 (prop_neg_elim2 a p))
             pP)).
 
-thm excluded_middle_c : p : Prop -> Prf (not (not (or p (not p))))
+thm pem_c : p : Prop -> Prf (not (not (or p (not p))))
 := p => neg_i (not (or p (not p))) 
     (pNPNP => neg_e (or p (not p)) pNPNP 
         (or_ir p (not p) 

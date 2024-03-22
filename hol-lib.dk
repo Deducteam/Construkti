@@ -383,7 +383,7 @@ thm double_neg_elim : (A : Prop -> (Prf (imp (not (not A)) A)))
     A 
     (pNNA : (Prf (not (not A))) => (or_e A 
         (not A) 
-        (excluded_middle A)
+        (pem A)
         A 
         (pA : (Prf A) => pA) 
         (pNA : (Prf (not A)) => (bot_e (neg_e (not A) pNNA pNA) A)))))).
@@ -408,7 +408,7 @@ thm clavius : (Prf (all o (A : (El o) => (imp (imp (not A) A) A))))
     (A : Prop => (imp_i 
         (imp (not A) A) 
         A 
-        (pNAA : (Prf (imp (not A) A)) => (or_e A (not A) (excluded_middle A) A 
+        (pNAA : (Prf (imp (not A) A)) => (or_e A (not A) (pem A) A 
             (pA : (Prf A) => pA) 
             (pNA : (Prf (not A)) => (imp_e (not A) A pNAA pNA))))))).
 
@@ -417,14 +417,14 @@ thm tarski : (Prf (all o (A : (El o) => (all o (B : (El o) => (or A (imp A B))))
     (A : (El o) => (all o (B : (El o) => (or A (imp A B))))) 
     (A : Prop => (all_i o 
         (B : (El o) => (or A (imp A B))) 
-        (B : Prop => (or_e A (not A) (excluded_middle A) (or A (imp A B)) 
+        (B : Prop => (or_e A (not A) (pem A) (or A (imp A B)) 
             (pA : (Prf A) => (or_il A pA (imp A B))) 
             (pNA : (Prf (not A)) => (or_ir A (imp A B) (imp_i A B (pA : (Prf A) => (bot_e (neg_e A pNA pA) B)))))))))).
 
 thm weak_peirce : (Prf (all o (A : (El o) => (imp (imp (imp A bot) A) A)))) 
 := (all_i o 
     (A : (El o) => (imp (imp (imp A bot) A) A)) 
-    (A : Prop => (imp_i (imp (imp A bot) A) A (pAFA : (Prf (imp (imp A bot) A)) => (or_e A (not A) (excluded_middle A) A 
+    (A : Prop => (imp_i (imp (imp A bot) A) A (pAFA : (Prf (imp (imp A bot) A)) => (or_e A (not A) (pem A) A 
         (pA : (Prf A) => pA) 
         (pNA : (Prf (not A)) => (imp_e (imp A bot) A pAFA (imp_i A bot (pA : (Prf A) => (neg_e A pNA pA)))))))))).
 
@@ -472,8 +472,8 @@ thm weak_linearity : (Prf (all o (A : (El o) => (all o (B : (El o) => (or (imp A
                 B) 
             A))))).
 
-thm weak_excluded_middle : (Prf (all o (A : (El o) => (or (not A) (not (not A)))))) 
-:= (all_i o (A : (El o) => (or (not A) (not (not A)))) (A : Prop => (excluded_middle (not A)))).
+thm weak_pem : (Prf (all o (A : (El o) => (or (not A) (not (not A)))))) 
+:= (all_i o (A : (El o) => (or (not A) (not (not A)))) (A : Prop => (pem (not A)))).
 
 thm non_contradiction : (Prf (all o (A : (El o) => (not (and A (not A)))))) 
 := (all_i o 

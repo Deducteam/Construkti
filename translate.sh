@@ -33,7 +33,7 @@ then
     sed -i 's/all_e /all_e_c /g' $tmp
     sed -i 's/ex_i /ex_i_c /g' $tmp
     sed -i 's/ex_e /ex_e_c /g' $tmp
-    sed -i 's/excluded_middle /excluded_middle_c /g' $tmp
+    sed -i 's/pem /pem_c /g' $tmp
 
     dune build
     dune exec -- construkti --file $tmp > $tmp2
