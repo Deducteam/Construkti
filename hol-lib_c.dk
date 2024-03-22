@@ -1453,7 +1453,7 @@ thm weak_linearity :
              B)
           A)).
 
-thm weak_pem_c :
+thm weak_excluded_middle :
   Prf (not (not (all o (A:(El o) => not (not (or (not A) (not (not A))))))))
   :=
   all_i_c o (A:(El o) => or (not A) (not (not A))) (A:Prop => pem_c (not A)).

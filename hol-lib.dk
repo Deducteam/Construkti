@@ -472,7 +472,7 @@ thm weak_linearity : (Prf (all o (A : (El o) => (all o (B : (El o) => (or (imp A
                 B) 
             A))))).
 
-thm weak_pem : (Prf (all o (A : (El o) => (or (not A) (not (not A)))))) 
+thm weak_excluded_middle : (Prf (all o (A : (El o) => (or (not A) (not (not A)))))) 
 := (all_i o (A : (El o) => (or (not A) (not (not A)))) (A : Prop => (pem (not A)))).
 
 thm non_contradiction : (Prf (all o (A : (El o) => (not (and A (not A)))))) 
