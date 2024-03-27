@@ -520,6 +520,25 @@ thm or_assoc :
                       (pB:(Prf (not (not B))) => or_il_c (or A B) (or_ir_c A B pB) C)
                       (pC:(Prf (not (not C))) => or_ir_c (or A B) C pC))))))).
 
+thm iff_i :
+  A:Prop ->
+  B:Prop -> (Prf (not (not (imp A B)))) -> (Prf (not (not (imp B A)))) -> Prf (not (not (iff A B)))
+  :=
+  A:Prop =>
+  B:Prop =>
+  pAB:(Prf (not (not (imp A B)))) =>
+  pBA:(Prf (not (not (imp B A)))) => and_i_c (imp A B) pAB (imp B A) pBA.
+
+thm iff_el :
+  A:Prop -> B:Prop -> (Prf (not (not (iff A B)))) -> Prf (not (not (imp A B)))
+  :=
+  A:Prop => B:Prop => pAB:(Prf (not (not (iff A B)))) => and_el_c (imp A B) (imp B A) pAB.
+
+thm iff_er :
+  A:Prop -> B:Prop -> (Prf (not (not (iff A B)))) -> Prf (not (not (imp B A)))
+  :=
+  A:Prop => B:Prop => pAB:(Prf (not (not (iff A B)))) => and_er_c (imp A B) (imp B A) pAB.
+
 thm iff_refl_rule :
   A:Prop -> Prf (not (not (iff A A)))
   :=
@@ -2137,6 +2156,47 @@ thm induction_rule :
           (n:(El nat) => imp (P n) (P (S n)))
           (m:(El nat) => imp_i_c (P m) (P (S m)) (IH m)))).
 
+thm Z_pred :
+  Prf
+    (not
+       (not
+          (all
+             nat
+             (n:(El nat) => not (not (or (eq nat n 0) (ex nat (m:(El nat) => eq nat n (S m)))))))))
+  :=
+  induction_rule
+    (n:(El nat) => or (eq nat n 0) (ex nat (m:(El nat) => eq nat n (S m))))
+    (or_il_c (eq nat 0 0) (eq_refl_rule nat 0) (ex nat (m:(El nat) => eq nat 0 (S m))))
+    (n:(El nat) =>
+     pPn:(Prf (not (not (or (eq nat n 0) (ex nat (m:(El nat) => eq nat n (S m))))))) =>
+     or_ir_c
+       (eq nat (S n) 0)
+       (ex nat (m:(El nat) => eq nat (S n) (S m)))
+       (or_e_c
+          (eq nat n 0)
+          (ex nat (m:(El nat) => eq nat n (S m)))
+          pPn
+          (ex nat (m:(El nat) => eq nat (S n) (S m)))
+          (pZ:(Prf (not (not (eq nat n 0)))) =>
+           ex_i_c
+             nat
+             (m:(El nat) => eq nat (S n) (S m))
+             0
+             (eq_fun_rule nat nat (w:(El nat) => S w) n 0 pZ))
+          (pEm:(Prf (not (not (ex nat (m:(El nat) => eq nat n (S m)))))) =>
+           ex_e_c
+             nat
+             (m:(El nat) => eq nat n (S m))
+             pEm
+             (ex nat (m:(El nat) => eq nat (S n) (S m)))
+             (t:(El nat) =>
+              pSt:(Prf (not (not (eq nat n (S t))))) =>
+              ex_i_c
+                nat
+                (m:(El nat) => eq nat (S n) (S m))
+                (S t)
+                (eq_fun_rule nat nat (w:(El nat) => S w) n (S t) pSt))))).
+
 thm add_nZ :
   Prf (not (not (all nat (n:(El nat) => not (not (eq nat (add n 0) n))))))
   :=
@@ -2297,6 +2357,125 @@ thm add_comm_rule :
        n)
     m.
 
+thm add_left_cancel :
+  Prf
+    (not
+       (not
+          (all
+             nat
+             (n:(El nat) =>
+              not
+                (not (all nat (m:(El nat) => not (not (imp (eq nat (add m n) m) (eq nat n 0))))))))))
+  :=
+  all_i_c
+    nat
+    (n:(El nat) => all nat (m:(El nat) => not (not (imp (eq nat (add m n) m) (eq nat n 0)))))
+    (n:(El nat) =>
+     induction_rule
+       (m:(El nat) => imp (eq nat (add m n) m) (eq nat n 0))
+       (imp_i_c
+          (eq nat (add 0 n) 0)
+          (eq nat n 0)
+          (Pn:(Prf (not (not (eq nat (add 0 n) 0)))) =>
+           all_e_c nat (x:(El nat) => eq nat (add 0 x) x) add_Zn n (w:(El nat) => eq nat w 0) Pn))
+       (m:(El nat) =>
+        Pm:(Prf (not (not (imp (eq nat (add m n) m) (eq nat n 0))))) =>
+        add_comm_rule
+          n
+          (S m)
+          (w:(El nat) => imp (eq nat w (S m)) (eq nat n 0))
+          (add_comm_rule m n (w:(El nat) => imp (eq nat (S w) (S m)) (eq nat n 0)) Pm))).
+
+thm add_left_cancel_rule :
+  n:(El nat) -> m:(El nat) -> (Prf (not (not (eq nat (add m n) m)))) -> Prf (not (not (eq nat n 0)))
+  :=
+  n:(El nat) =>
+  m:(El nat) =>
+  imp_e_c
+    (eq nat (add m n) m)
+    (eq nat n 0)
+    (all_e_c
+       nat
+       (m1:(El nat) => imp (eq nat (add m1 n) m1) (eq nat n 0))
+       (all_e_c
+          nat
+          (n1:(El nat) =>
+           all nat (m1:(El nat) => not (not (imp (eq nat (add m1 n1) m1) (eq nat n1 0)))))
+          add_left_cancel
+          n)
+       m).
+
+thm add_right_cancel_rule :
+  n:(El nat) -> m:(El nat) -> (Prf (not (not (eq nat (add n m) m)))) -> Prf (not (not (eq nat n 0)))
+  :=
+  n:(El nat) =>
+  m:(El nat) =>
+  imp_e_c
+    (eq nat (add n m) m)
+    (eq nat n 0)
+    (add_comm_rule
+       m
+       n
+       (w:(El nat) => imp (eq nat w m) (eq nat n 0))
+       (imp_i_c (eq nat (add m n) m) (eq nat n 0) (add_left_cancel_rule n m))).
+
+thm add_left_cancel_Z :
+  Prf
+    (not
+       (not
+          (all
+             nat
+             (n:(El nat) =>
+              not
+                (not (all nat (m:(El nat) => not (not (imp (eq nat (add n m) 0) (eq nat n 0))))))))))
+  :=
+  all_i_c
+    nat
+    (n:(El nat) => all nat (m:(El nat) => not (not (imp (eq nat (add n m) 0) (eq nat n 0)))))
+    (n:(El nat) =>
+     induction_rule
+       (m:(El nat) => imp (eq nat (add n m) 0) (eq nat n 0))
+       (imp_i_c (eq nat (add n 0) 0) (eq nat n 0) (Pn:(Prf (not (not (eq nat (add n 0) 0)))) => Pn))
+       (m:(El nat) =>
+        pPm:(Prf (not (not (imp (eq nat (add n m) 0) (eq nat n 0))))) =>
+        imp_i_c
+          (eq nat (add n (S m)) 0)
+          (eq nat n 0)
+          (PF:(Prf (not (not (eq nat (add n (S m)) 0)))) => bot_e_c PF (eq nat n 0)))).
+
+thm add_left_cancel_Z_rule :
+  n:(El nat) -> m:(El nat) -> (Prf (not (not (eq nat (add n m) 0)))) -> Prf (not (not (eq nat n 0)))
+  :=
+  n:(El nat) =>
+  m:(El nat) =>
+  imp_e_c
+    (eq nat (add n m) 0)
+    (eq nat n 0)
+    (all_e_c
+       nat
+       (m1:(El nat) => imp (eq nat (add n m1) 0) (eq nat n 0))
+       (all_e_c
+          nat
+          (n1:(El nat) =>
+           all nat (m1:(El nat) => not (not (imp (eq nat (add n1 m1) 0) (eq nat n1 0)))))
+          add_left_cancel_Z
+          n)
+       m).
+
+thm add_right_cancel_Z_rule :
+  n:(El nat) -> m:(El nat) -> (Prf (not (not (eq nat (add m n) 0)))) -> Prf (not (not (eq nat n 0)))
+  :=
+  n:(El nat) =>
+  m:(El nat) =>
+  imp_e_c
+    (eq nat (add m n) 0)
+    (eq nat n 0)
+    (add_comm_rule
+       n
+       m
+       (w:(El nat) => imp (eq nat w 0) (eq nat n 0))
+       (imp_i_c (eq nat (add n m) 0) (eq nat n 0) (add_left_cancel_Z_rule n m))).
+
 thm mult_nZ :
   Prf (not (not (all nat (n:(El nat) => not (not (eq nat (mult n 0) 0))))))
   :=
@@ -2431,44 +2610,518 @@ thm mult_comm_rule :
        n)
     m.
 
-thm Z_pred :
+thm distrib_right :
   Prf
     (not
        (not
           (all
              nat
-             (n:(El nat) => not (not (or (eq nat n 0) (ex nat (m:(El nat) => eq nat n (S m)))))))))
+             (n:(El nat) =>
+              not
+                (not
+                   (all
+                      nat
+                      (m:(El nat) =>
+                       not
+                         (not
+                            (all
+                               nat
+                               (p:(El nat) =>
+                                not
+                                  (not
+                                     (eq
+                                        nat
+                                        (mult (add n m) p)
+                                        (add (mult n p) (mult m p))))))))))))))
   :=
-  induction_rule
-    (n:(El nat) => or (eq nat n 0) (ex nat (m:(El nat) => eq nat n (S m))))
-    (or_il_c (eq nat 0 0) (eq_refl_rule nat 0) (ex nat (m:(El nat) => eq nat 0 (S m))))
+  all_i_c
+    nat
     (n:(El nat) =>
-     pPn:(Prf (not (not (or (eq nat n 0) (ex nat (m:(El nat) => eq nat n (S m))))))) =>
-     or_ir_c
-       (eq nat (S n) 0)
-       (ex nat (m:(El nat) => eq nat (S n) (S m)))
-       (or_e_c
-          (eq nat n 0)
-          (ex nat (m:(El nat) => eq nat n (S m)))
-          pPn
-          (ex nat (m:(El nat) => eq nat (S n) (S m)))
-          (pZ:(Prf (not (not (eq nat n 0)))) =>
-           ex_i_c
-             nat
-             (m:(El nat) => eq nat (S n) (S m))
-             0
-             (eq_fun_rule nat nat (w:(El nat) => S w) n 0 pZ))
-          (pEm:(Prf (not (not (ex nat (m:(El nat) => eq nat n (S m)))))) =>
-           ex_e_c
-             nat
-             (m:(El nat) => eq nat n (S m))
-             pEm
-             (ex nat (m:(El nat) => eq nat (S n) (S m)))
-             (t:(El nat) =>
-              pSt:(Prf (not (not (eq nat n (S t))))) =>
-              ex_i_c
+     all
+       nat
+       (m:(El nat) =>
+        not
+          (not
+             (all
                 nat
-                (m:(El nat) => eq nat (S n) (S m))
-                (S t)
-                (eq_fun_rule nat nat (w:(El nat) => S w) n (S t) pSt))))).
+                (p:(El nat) => not (not (eq nat (mult (add n m) p) (add (mult n p) (mult m p)))))))))
+    (n:(El nat) =>
+     all_i_c
+       nat
+       (m:(El nat) =>
+        all nat (p:(El nat) => not (not (eq nat (mult (add n m) p) (add (mult n p) (mult m p))))))
+       (m:(El nat) =>
+        induction_rule
+          (p:(El nat) => eq nat (mult (add n m) p) (add (mult n p) (mult m p)))
+          (eq_refl_rule nat 0)
+          (p:(El nat) =>
+           pPp:(Prf (not (not (eq nat (mult (add n m) p) (add (mult n p) (mult m p)))))) =>
+           add_assoc_rule
+             (add (mult n p) n)
+             (mult m p)
+             m
+             (w:(El nat) => eq nat (mult (add n m) (S p)) w)
+             (eq_sym_rule
+                nat
+                (add (add (mult n p) n) (mult m p))
+                (add (mult n p) (add n (mult m p)))
+                (add_assoc_rule (mult n p) n (mult m p))
+                (w:(El nat) => eq nat (mult (add n m) (S p)) (add w m))
+                (add_comm_rule
+                   (mult m p)
+                   n
+                   (w:(El nat) => eq nat (mult (add n m) (S p)) (add (add (mult n p) w) m))
+                   (add_assoc_rule
+                      (mult n p)
+                      (mult m p)
+                      n
+                      (w:(El nat) => eq nat (mult (add n m) (S p)) (add w m))
+                      (eq_sym_rule
+                         nat
+                         (add (add (add (mult n p) (mult m p)) n) m)
+                         (add (add (mult n p) (mult m p)) (add n m))
+                         (add_assoc_rule (add (mult n p) (mult m p)) n m)
+                         (w:(El nat) => eq nat (mult (add n m) (S p)) w)
+                         (pPp
+                            (w:(El nat) => eq nat (mult (add n m) (S p)) (add w (add n m)))
+                            (eq_refl_rule nat (mult (add n m) (S p))))))))))).
+
+thm distrib_right_rule :
+  n:(El nat) ->
+  m:(El nat) -> p:(El nat) -> Prf (not (not (eq nat (mult (add n m) p) (add (mult n p) (mult m p)))))
+  :=
+  n:(El nat) =>
+  m:(El nat) =>
+  p:(El nat) =>
+  all_e_c
+    nat
+    (p1:(El nat) => eq nat (mult (add n m) p1) (add (mult n p1) (mult m p1)))
+    (all_e_c
+       nat
+       (m1:(El nat) =>
+        all
+          nat
+          (p1:(El nat) => not (not (eq nat (mult (add n m1) p1) (add (mult n p1) (mult m1 p1))))))
+       (all_e_c
+          nat
+          (n1:(El nat) =>
+           all
+             nat
+             (m1:(El nat) =>
+              not
+                (not
+                   (all
+                      nat
+                      (p1:(El nat) =>
+                       not (not (eq nat (mult (add n1 m1) p1) (add (mult n1 p1) (mult m1 p1)))))))))
+          distrib_right
+          n)
+       m)
+    p.
+
+thm distrib_left_rule :
+  n:(El nat) ->
+  m:(El nat) -> p:(El nat) -> Prf (not (not (eq nat (mult n (add m p)) (add (mult n m) (mult n p)))))
+  :=
+  n:(El nat) =>
+  m:(El nat) =>
+  p:(El nat) =>
+  mult_comm_rule
+    (add m p)
+    n
+    (w:(El nat) => eq nat w (add (mult n m) (mult n p)))
+    (mult_comm_rule
+       m
+       n
+       (w:(El nat) => eq nat (mult (add m p) n) (add w (mult n p)))
+       (mult_comm_rule
+          p
+          n
+          (w:(El nat) => eq nat (mult (add m p) n) (add (mult m n) w))
+          (distrib_right_rule m p n))).
+
+thm mult_assoc :
+  Prf
+    (not
+       (not
+          (all
+             nat
+             (n:(El nat) =>
+              not
+                (not
+                   (all
+                      nat
+                      (m:(El nat) =>
+                       not
+                         (not
+                            (all
+                               nat
+                               (p:(El nat) =>
+                                not (not (eq nat (mult (mult n m) p) (mult n (mult m p))))))))))))))
+  :=
+  all_i_c
+    nat
+    (n:(El nat) =>
+     all
+       nat
+       (m:(El nat) =>
+        not
+          (not (all nat (p:(El nat) => not (not (eq nat (mult (mult n m) p) (mult n (mult m p)))))))))
+    (n:(El nat) =>
+     all_i_c
+       nat
+       (m:(El nat) =>
+        all nat (p:(El nat) => not (not (eq nat (mult (mult n m) p) (mult n (mult m p))))))
+       (m:(El nat) =>
+        induction_rule
+          (p:(El nat) => eq nat (mult (mult n m) p) (mult n (mult m p)))
+          (eq_refl_rule nat 0)
+          (p:(El nat) =>
+           pPp:(Prf (not (not (eq nat (mult (mult n m) p) (mult n (mult m p)))))) =>
+           eq_sym_rule
+             nat
+             (mult (mult n m) p)
+             (mult n (mult m p))
+             pPp
+             (w:(El nat) => eq nat (add w (mult n m)) (mult n (mult m (S p))))
+             (distrib_left_rule
+                n
+                (mult m p)
+                m
+                (w:(El nat) => eq nat w (mult n (mult m (S p))))
+                (eq_refl_rule nat (mult n (mult m (S p)))))))).
+
+thm mult_assoc_rule :
+  n:(El nat) ->
+  m:(El nat) -> p:(El nat) -> Prf (not (not (eq nat (mult (mult n m) p) (mult n (mult m p)))))
+  :=
+  n:(El nat) =>
+  m:(El nat) =>
+  p:(El nat) =>
+  all_e_c
+    nat
+    (p1:(El nat) => eq nat (mult (mult n m) p1) (mult n (mult m p1)))
+    (all_e_c
+       nat
+       (m1:(El nat) =>
+        all nat (p1:(El nat) => not (not (eq nat (mult (mult n m1) p1) (mult n (mult m1 p1))))))
+       (all_e_c
+          nat
+          (n1:(El nat) =>
+           all
+             nat
+             (m1:(El nat) =>
+              not
+                (not
+                   (all
+                      nat
+                      (p1:(El nat) =>
+                       not (not (eq nat (mult (mult n1 m1) p1) (mult n1 (mult m1 p1)))))))))
+          mult_assoc
+          n)
+       m)
+    p.
+
+def exp : (El nat) -> (El nat) -> El nat.
+
+[b] exp b (0) --> S 0.
+
+[x, b] exp b (S x) --> mult b (exp b x).
+
+thm mult_one :
+  Prf (not (not (all nat (n:(El nat) => not (not (eq nat n (mult n (S 0))))))))
+  :=
+  all_i_c
+    nat
+    (n:(El nat) => eq nat n (mult n (S 0)))
+    (n:(El nat) =>
+     all_e_c
+       nat
+       (n1:(El nat) => eq nat (add 0 n1) n1)
+       add_Zn
+       n
+       (w:(El nat) => eq nat w (add 0 n))
+       (eq_refl_rule nat (add 0 n))).
+
+thm exp_add :
+  Prf
+    (not
+       (not
+          (all
+             nat
+             (b:(El nat) =>
+              not
+                (not
+                   (all
+                      nat
+                      (n:(El nat) =>
+                       not
+                         (not
+                            (all
+                               nat
+                               (m:(El nat) =>
+                                not
+                                  (not
+                                     (eq nat (exp b (add n m)) (mult (exp b n) (exp b m))))))))))))))
+  :=
+  all_i_c
+    nat
+    (b:(El nat) =>
+     all
+       nat
+       (n:(El nat) =>
+        not
+          (not
+             (all
+                nat
+                (m:(El nat) => not (not (eq nat (exp b (add n m)) (mult (exp b n) (exp b m)))))))))
+    (b:(El nat) =>
+     all_i_c
+       nat
+       (n:(El nat) =>
+        all nat (m:(El nat) => not (not (eq nat (exp b (add n m)) (mult (exp b n) (exp b m))))))
+       (n:(El nat) =>
+        induction_rule
+          (m:(El nat) => eq nat (exp b (add n m)) (mult (exp b n) (exp b m)))
+          (all_e_c
+             nat
+             (n1:(El nat) => eq nat n1 (mult n1 (S 0)))
+             mult_one
+             (exp b n)
+             (w:(El nat) => eq nat (exp b (add n 0)) w)
+             (eq_refl_rule nat (exp b n)))
+          (m:(El nat) =>
+           pPm:(Prf (not (not (eq nat (exp b (add n m)) (mult (exp b n) (exp b m)))))) =>
+           mult_assoc_rule
+             (exp b n)
+             b
+             (exp b m)
+             (w:(El nat) => eq nat (mult b (exp b (add n m))) w)
+             (mult_comm_rule
+                b
+                (exp b n)
+                (w:(El nat) => eq nat (mult b (exp b (add n m))) (mult w (exp b m)))
+                (eq_sym_rule
+                   nat
+                   (exp b (add n m))
+                   (mult (exp b n) (exp b m))
+                   pPm
+                   (w:(El nat) => eq nat (mult b w) (mult (mult b (exp b n)) (exp b m)))
+                   (mult_assoc_rule
+                      b
+                      (exp b n)
+                      (exp b m)
+                      (w:(El nat) => eq nat w (mult (mult b (exp b n)) (exp b m)))
+                      (eq_refl_rule nat (mult (mult b (exp b n)) (exp b m))))))))).
+
+thm exp_add_rule :
+  b:(El nat) ->
+  n:(El nat) -> m:(El nat) -> Prf (not (not (eq nat (exp b (add n m)) (mult (exp b n) (exp b m)))))
+  :=
+  b:(El nat) =>
+  n:(El nat) =>
+  m:(El nat) =>
+  all_e_c
+    nat
+    (m1:(El nat) => eq nat (exp b (add n m1)) (mult (exp b n) (exp b m1)))
+    (all_e_c
+       nat
+       (n1:(El nat) =>
+        all nat (m1:(El nat) => not (not (eq nat (exp b (add n1 m1)) (mult (exp b n1) (exp b m1))))))
+       (all_e_c
+          nat
+          (b1:(El nat) =>
+           all
+             nat
+             (n1:(El nat) =>
+              not
+                (not
+                   (all
+                      nat
+                      (m1:(El nat) =>
+                       not (not (eq nat (exp b1 (add n1 m1)) (mult (exp b1 n1) (exp b1 m1)))))))))
+          exp_add
+          b)
+       n)
+    m.
+
+thm exp_mult :
+  Prf
+    (not
+       (not
+          (all
+             nat
+             (b:(El nat) =>
+              not
+                (not
+                   (all
+                      nat
+                      (n:(El nat) =>
+                       not
+                         (not
+                            (all
+                               nat
+                               (m:(El nat) =>
+                                not (not (eq nat (exp b (mult n m)) (exp (exp b n) m)))))))))))))
+  :=
+  all_i_c
+    nat
+    (b:(El nat) =>
+     all
+       nat
+       (n:(El nat) =>
+        not (not (all nat (m:(El nat) => not (not (eq nat (exp b (mult n m)) (exp (exp b n) m))))))))
+    (b:(El nat) =>
+     all_i_c
+       nat
+       (n:(El nat) =>
+        all nat (m:(El nat) => not (not (eq nat (exp b (mult n m)) (exp (exp b n) m)))))
+       (n:(El nat) =>
+        induction_rule
+          (m:(El nat) => eq nat (exp b (mult n m)) (exp (exp b n) m))
+          (eq_refl_rule nat (S 0))
+          (m:(El nat) =>
+           pPm:(Prf (not (not (eq nat (exp b (mult n m)) (exp (exp b n) m))))) =>
+           pPm
+             (w:(El nat) => eq nat (exp b (mult n (S m))) (mult (exp b n) w))
+             (exp_add_rule
+                b
+                n
+                (mult n m)
+                (w:(El nat) => eq nat (exp b (mult n (S m))) w)
+                (add_comm_rule
+                   (mult n m)
+                   n
+                   (w:(El nat) => eq nat (exp b (mult n (S m))) (exp b w))
+                   (eq_refl_rule nat (exp b (mult n (S m))))))))).
+
+thm exp_mult_rule :
+  b:(El nat) ->
+  n:(El nat) -> m:(El nat) -> Prf (not (not (eq nat (exp b (mult n m)) (exp (exp b n) m))))
+  :=
+  b:(El nat) =>
+  n:(El nat) =>
+  m:(El nat) =>
+  all_e_c
+    nat
+    (m1:(El nat) => eq nat (exp b (mult n m1)) (exp (exp b n) m1))
+    (all_e_c
+       nat
+       (n1:(El nat) =>
+        all nat (m1:(El nat) => not (not (eq nat (exp b (mult n1 m1)) (exp (exp b n1) m1)))))
+       (all_e_c
+          nat
+          (b1:(El nat) =>
+           all
+             nat
+             (n1:(El nat) =>
+              not
+                (not
+                   (all
+                      nat
+                      (m1:(El nat) =>
+                       not (not (eq nat (exp b1 (mult n1 m1)) (exp (exp b1 n1) m1))))))))
+          exp_mult
+          b)
+       n)
+    m.
+
+def leq : (El nat) -> (El nat) -> Prop.
+
+[_1, _0] leq _0 _1 --> ex nat (p:(El nat) => eq nat (add _0 p) _1).
+
+thm leq_refl :
+  n:(El nat) -> Prf (not (not (leq n n)))
+  :=
+  n:(El nat) => ex_i_c nat (p:(El nat) => eq nat (add n p) n) 0 (eq_refl_rule nat n).
+
+thm leq_trans :
+  n:(El nat) ->
+  m:(El nat) ->
+  p:(El nat) ->
+  (Prf (not (not (leq n m)))) -> (Prf (not (not (leq m p)))) -> Prf (not (not (leq n p)))
+  :=
+  n:(El nat) =>
+  m:(El nat) =>
+  p:(El nat) =>
+  Pnm:(Prf (not (not (leq n m)))) =>
+  Pmp:(Prf (not (not (leq m p)))) =>
+  ex_e_c
+    nat
+    (x:(El nat) => eq nat (add n x) m)
+    Pnm
+    (leq n p)
+    (x:(El nat) =>
+     Px:(Prf (not (not (eq nat (add n x) m)))) =>
+     ex_e_c
+       nat
+       (y:(El nat) => eq nat (add m y) p)
+       Pmp
+       (leq n p)
+       (y:(El nat) =>
+        Py:(Prf (not (not (eq nat (add m y) p)))) =>
+        ex_i_c
+          nat
+          (z:(El nat) => eq nat (add n z) p)
+          (add x y)
+          (Py
+             (w:(El nat) => eq nat (add n (add x y)) w)
+             (Px
+                (w:(El nat) => eq nat (add n (add x y)) (add w y))
+                (eq_sym_rule nat (add (add n x) y) (add n (add x y)) (add_assoc_rule n x y)))))).
+
+thm leq_antisym :
+  n:(El nat) ->
+  m:(El nat) ->
+  (Prf (not (not (leq n m)))) -> (Prf (not (not (leq m n)))) -> Prf (not (not (eq nat n m)))
+  :=
+  n:(El nat) =>
+  m:(El nat) =>
+  Pnm:(Prf (not (not (leq n m)))) =>
+  Pmn:(Prf (not (not (leq m n)))) =>
+  ex_e_c
+    nat
+    (x:(El nat) => eq nat (add n x) m)
+    Pnm
+    (eq nat n m)
+    (x:(El nat) =>
+     Px:(Prf (not (not (eq nat (add n x) m)))) =>
+     ex_e_c
+       nat
+       (y:(El nat) => eq nat (add m y) n)
+       Pmn
+       (eq nat n m)
+       (y:(El nat) =>
+        Py:(Prf (not (not (eq nat (add m y) n)))) =>
+        imp_e_c
+          (eq nat x 0)
+          (eq nat n m)
+          (imp_i_c
+             (eq nat x 0)
+             (eq nat n m)
+             (PxZ:(Prf (not (not (eq nat x 0)))) => PxZ (w:(El nat) => eq nat (add n w) m) Px))
+          (imp_e_c
+             (eq nat (add x y) 0)
+             (eq nat x 0)
+             (all_e_c
+                nat
+                (m1:(El nat) => imp (eq nat (add x m1) 0) (eq nat x 0))
+                (all_e_c
+                   nat
+                   (n1:(El nat) =>
+                    all
+                      nat
+                      (m1:(El nat) => not (not (imp (eq nat (add n1 m1) 0) (eq nat n1 0)))))
+                   add_left_cancel_Z
+                   x)
+                y)
+             (add_left_cancel_rule
+                (add x y)
+                n
+                (add_assoc_rule
+                   n
+                   x
+                   y
+                   (w:(El nat) => eq nat w n)
+                   (eq_sym_rule nat (add n x) m Px (w:(El nat) => eq nat (add w y) n) Py)))))).
 
