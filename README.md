@@ -35,4 +35,9 @@ The translated proofs are displayed in the file `file_c.dk`.
 
 ### Benchmark
 
-You can test Construkti on `hol-lib.dk`, that contains the proofs of theorems in propositional, first-order and higher-order logics, including classical theorems. After translation, `hol-lib_c.dk` only contains intuitionistic proofs.
+You can test Construkti on `hol-lib.dk`. This library contains the proofs of more than 100 theorems 
+- in propositional, first-order and higher-order logics
+- including classical theorems
+- about logical connectives, equality and basic arithmetic
+- using Dedukti features such as user-defined rewrite rules. 
+After translation, `hol-lib_c.dk` only contains intuitionistic proofs.
