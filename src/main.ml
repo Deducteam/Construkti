@@ -22,9 +22,8 @@ let add_double_neg_prf lo n u l =
     l)
 ;;
 
-(* Transform all_c a p into all_c a (x : El a => (not (not (p x))) *)
-let add_double_neg_all lo n u l = 
-  let h = List.hd l in
+(* Transform all_c a p into all a (x : El a => (not (not (p x))) *)
+let add_double_neg_all lo n u h = 
   match h with
   | T.Lam (lo2, id, tob, t2) -> 
     T.mk_App (T.mk_Const lo (B.mk_name (B.md n) (B.mk_ident "all"))) 
@@ -39,7 +38,7 @@ let add_double_neg_all lo n u l =
       [T.mk_Lam lo idx None (add_double_neg lo n (T.mk_App (S.shift 1 h) x []))]
 ;;
 
-(* Transform Prf_c p and all_c in term v *)
+(* Transform Prf_c p and all_c a p in term v *)
 let rec add_double_neg_term v = 
   match v with
   | T.App (t, u, l) -> 
@@ -49,7 +48,12 @@ let rec add_double_neg_term v =
       then add_double_neg_prf lo n (add_double_neg_term u) (List.map add_double_neg_term l)
       else 
         (if String.equal "all_c" (B.string_of_ident (B.id n)) 
-        then add_double_neg_all lo n u (List.map add_double_neg_term l)
+        then 
+          (match l with
+          | [] -> (let idp = B.mk_ident "p" in 
+              let p = T.mk_DB lo idp 0 in
+              T.mk_Lam lo idp None (add_double_neg_all lo n u p))
+          | h::_ -> add_double_neg_all lo n u (add_double_neg_term h))
         else T.mk_App (add_double_neg_term t) (add_double_neg_term u) (List.map add_double_neg_term l)))
     | _ -> T.mk_App (add_double_neg_term t) (add_double_neg_term u) (List.map add_double_neg_term l))
   | Lam (lo, id, None, t) -> T.mk_Lam lo id None (add_double_neg_term t) 
@@ -58,7 +62,15 @@ let rec add_double_neg_term v =
   | Kind -> T.mk_Kind
   | Type lo -> T.mk_Type lo
   | DB (lo, id, n) -> T.mk_DB lo id n
-  | Const (lo, n) -> T.mk_Const lo n
+  | Const (lo, n) -> 
+    if String.equal "all_c" (B.string_of_ident (B.id n)) 
+      then 
+        (let ida = B.mk_ident "a" in 
+        let a = T.mk_DB lo ida 1 in
+        let idp = B.mk_ident "p" in 
+        let p = T.mk_DB lo idp 0 in
+        T.mk_Lam lo ida None (T.mk_Lam lo idp None (add_double_neg_all lo n a p)))
+      else T.mk_Const lo n
 ;;
 
 (* Transform Prf_c p and all_c in option term ty *)

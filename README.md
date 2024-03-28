@@ -33,11 +33,12 @@ bash translate.sh file.dk
 The translated proofs are displayed in the file `file_c.dk`.
 
 
-### Benchmark
+## Benchmark
 
-You can test Construkti on `hol-lib.dk`. This library contains the proofs of more than 100 theorems 
+You can test Construkti on `hol-lib.dk`. This library contains the proofs of 100 theorems 
 - in propositional, first-order and higher-order logics
 - including classical theorems
 - about logical connectives, equality and basic arithmetic
 - using Dedukti features such as user-defined rewrite rules. 
+
 After translation, `hol-lib_c.dk` only contains intuitionistic proofs.
