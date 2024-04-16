@@ -14,7 +14,7 @@ let add_double_neg lo n u =
       [])
 ;;
 
-(* Transform Prf_c p into Prf (not (not p)) *)
+(* Transform Prf_Ku p into Prf (not (not p)) *)
 let add_double_neg_prf lo n u l = 
   (T.mk_App 
     (T.mk_Const lo (B.mk_name (B.md n) (B.mk_ident "Prf"))) 
@@ -22,7 +22,7 @@ let add_double_neg_prf lo n u l =
     l)
 ;;
 
-(* Transform all_c a p into all a (x : El a => (not (not (p x))) *)
+(* Transform all_Ku a p into all a (x : El a => (not (not (p x))) *)
 let add_double_neg_all lo n u h = 
   match h with
   | T.Lam (lo2, id, tob, t2) -> 
@@ -38,16 +38,16 @@ let add_double_neg_all lo n u h =
       [T.mk_Lam lo idx None (add_double_neg lo n (T.mk_App (S.shift 1 h) x []))]
 ;;
 
-(* Transform Prf_c p and all_c a p in term v *)
+(* Transform Prf_Ku p and all_Ku a p in term v *)
 let rec add_double_neg_term v = 
   match v with
   | T.App (t, u, l) -> 
     (match t with
     | Const (lo, n) -> 
-      (if String.equal "Prf_c" (B.string_of_ident (B.id n)) 
+      (if String.equal "Prf_Ku" (B.string_of_ident (B.id n)) 
       then add_double_neg_prf lo n (add_double_neg_term u) (List.map add_double_neg_term l)
       else 
-        (if String.equal "all_c" (B.string_of_ident (B.id n)) 
+        (if String.equal "all_Ku" (B.string_of_ident (B.id n)) 
         then 
           (match l with
           | [] -> (let idp = B.mk_ident "p" in 
@@ -63,7 +63,7 @@ let rec add_double_neg_term v =
   | Type lo -> T.mk_Type lo
   | DB (lo, id, n) -> T.mk_DB lo id n
   | Const (lo, n) -> 
-    if String.equal "all_c" (B.string_of_ident (B.id n)) 
+    if String.equal "all_Ku" (B.string_of_ident (B.id n)) 
       then 
         (let ida = B.mk_ident "a" in 
         let a = T.mk_DB lo ida 1 in
@@ -73,20 +73,20 @@ let rec add_double_neg_term v =
       else T.mk_Const lo n
 ;;
 
-(* Transform Prf_c p and all_c in option term ty *)
+(* Transform Prf_Ku p and all_Ku in option term ty *)
 let add_double_neg_ty ty = 
   match ty with
   | None -> None
   | Some t -> Some (add_double_neg_term t)
 ;;
 
-(* Transform Prf_c p and all_c in pattern pat *)
+(* Transform Prf_Ku p and all_Ku in pattern pat *)
 let add_double_neg_pat pat = 
   let open R in
   Brackets (add_double_neg_term (pattern_to_term pat))
 ;;
 
-(* Transform Prf_c p and all_c in rule r *)
+(* Transform Prf_Ku p and all_Ku in rule r *)
 let add_double_neg_rule (r : R.partially_typed_rule) = 
   let open R in
   {name = r.name ; 
@@ -95,7 +95,7 @@ let add_double_neg_rule (r : R.partially_typed_rule) =
   rhs = add_double_neg_term r.rhs}
 ;;
 
-(* Transform Prf_c p and all_c in entry e *)
+(* Transform Prf_Ku p and all_Ku in entry e *)
 let add_double_neg_entry e = 
   match e with
   | E.Decl (lo, id, s1, s2, t) -> E.Decl (lo, id, s1, s2, add_double_neg_term t)
@@ -113,8 +113,8 @@ let add_double_neg_entry e =
 Api.Pp.print_module_name := false;;
 Api.Pp.print_db_enabled := false;;
 
-(* Transform Prf_c p and all_c in the Dedukti file given in the command line *)
-let usage_msg = "A tool to replace Prf_c p by Prf (not (not p)) and all_c a p by all a (x : El a => not (not (p x)))\n"
+(* Transform Prf_Ku p and all_Ku in the Dedukti file given in the command line *)
+let usage_msg = "A tool to replace Prf_Ku p by Prf (not (not p)) and all_Ku a p by all a (x : El a => not (not (p x)))\n"
 let filename = ref None
 let speclist = [( "--file", Arg.String (fun s -> filename := Some s), "The file in wich to add double negations")]
 

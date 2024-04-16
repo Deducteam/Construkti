@@ -30,7 +30,7 @@ cd construkti
 ```
 bash translate.sh file.dk
 ```
-The translated proofs are displayed in the file `file_c.dk`.
+The translated proofs are displayed in the file `file_i.dk`.
 
 
 ## Benchmark
@@ -41,4 +41,4 @@ You can test Construkti on `hol-lib.dk`. This library contains the proofs of 100
 - about logical connectives, equality and basic arithmetic
 - using Dedukti features such as user-defined rewrite rules. 
 
-After translation, `hol-lib_c.dk` only contains intuitionistic proofs.
+After translation, `hol-lib_i.dk` only contains intuitionistic proofs.

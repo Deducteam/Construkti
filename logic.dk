@@ -29,27 +29,27 @@ def iff := p : Prop => q : Prop => and (imp p q) (imp q p).
 
 (; Classical natural deduction rules ;)
 
-def imp_i : p : Prop -> q : Prop -> (Prf p -> Prf q) -> Prf (imp p q).
-def imp_e : p : Prop -> q : Prop -> Prf (imp p q) -> Prf p -> Prf q.
+imp_i : p : Prop -> q : Prop -> (Prf p -> Prf q) -> Prf (imp p q).
+imp_e : p : Prop -> q : Prop -> Prf (imp p q) -> Prf p -> Prf q.
 
-def and_i : p : Prop -> Prf p -> q : Prop -> Prf q -> Prf (and p q).
-def and_el : p : Prop -> q : Prop -> Prf (and p q) -> Prf p.
-def and_er : p : Prop -> q : Prop -> Prf (and p q) -> Prf q.
+and_i : p : Prop -> Prf p -> q : Prop -> Prf q -> Prf (and p q).
+and_el : p : Prop -> q : Prop -> Prf (and p q) -> Prf p.
+and_er : p : Prop -> q : Prop -> Prf (and p q) -> Prf q.
 
-def or_il : p : Prop -> Prf p -> q : Prop -> Prf (or p q).
-def or_ir : p : Prop ->  q : Prop -> Prf q -> Prf (or p q).
-def or_e : p : Prop -> q : Prop -> Prf (or p q) -> r : Prop -> (Prf p -> Prf r) -> (Prf q -> Prf r) -> Prf r.
+or_il : p : Prop -> Prf p -> q : Prop -> Prf (or p q).
+or_ir : p : Prop ->  q : Prop -> Prf q -> Prf (or p q).
+or_e : p : Prop -> q : Prop -> Prf (or p q) -> r : Prop -> (Prf p -> Prf r) -> (Prf q -> Prf r) -> Prf r.
 
-def neg_i : p : Prop -> (Prf p -> Prf bot) -> Prf (not p).
-def neg_e : p : Prop -> Prf (not p) -> Prf p -> Prf bot.
+neg_i : p : Prop -> (Prf p -> Prf bot) -> Prf (not p).
+neg_e : p : Prop -> Prf (not p) -> Prf p -> Prf bot.
 
-def top_i : Prf top.
-def bot_e : Prf bot -> p : Prop -> Prf p.
+top_i : Prf top.
+bot_e : Prf bot -> p : Prop -> Prf p.
 
-def all_i : a : Set -> p : (El a -> Prop) -> (x : El a -> Prf (p x)) -> Prf (all a p).
-def all_e : a : Set -> p : (El a -> Prop) -> Prf (all a p) -> x : El a -> Prf (p x).
+all_i : a : Set -> p : (El a -> Prop) -> (x : El a -> Prf (p x)) -> Prf (all a p).
+all_e : a : Set -> p : (El a -> Prop) -> Prf (all a p) -> x : El a -> Prf (p x).
 
-def ex_i : a : Set -> p : (El a -> Prop) -> t : El a -> Prf (p t) -> Prf (ex a p).
-def ex_e : a : Set -> p : (El a -> Prop) -> Prf (ex a p) -> r : Prop -> (x : El a -> Prf (p x) -> Prf r) -> Prf r.
+ex_i : a : Set -> p : (El a -> Prop) -> t : El a -> Prf (p t) -> Prf (ex a p).
+ex_e : a : Set -> p : (El a -> Prop) -> Prf (ex a p) -> r : Prop -> (x : El a -> Prf (p x) -> Prf r) -> Prf r.
 
-def pem : p : Prop -> Prf (or p (not p)).
+pem : p : Prop -> Prf (or p (not p)).

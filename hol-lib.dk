@@ -705,7 +705,7 @@ thm eq_comp : (a : Set -> (b : Set -> (c : Set -> (Prf (all (fun b c) (f : ((El 
 
 nat : Set.
 0 : (El nat).
-def S : ((El nat) -> (El nat)).
+S : ((El nat) -> (El nat)).
 def add : ((El nat) -> ((El nat) -> (El nat))).
 def mult : ((El nat) -> ((El nat) -> (El nat))).
 
