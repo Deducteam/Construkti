@@ -709,7 +709,7 @@ S : ((El nat) -> (El nat)).
 def add : ((El nat) -> ((El nat) -> (El nat))).
 def mult : ((El nat) -> ((El nat) -> (El nat))).
 
-[a, x] eq a (S x) 0 --> bot.
+[x] eq nat (S x) 0 --> bot.
 [x, y] eq nat (S x) (S y) --> (eq nat x y).
 [x] add x 0 --> x.
 [x, y] add x (S y) --> (S (add x y)).

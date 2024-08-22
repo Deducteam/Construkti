@@ -2102,7 +2102,7 @@ def add : (El nat) -> (El nat) -> El nat.
 
 def mult : (El nat) -> (El nat) -> El nat.
 
-[x, a] eq a (S x) (0) --> bot.
+[x] eq (nat) (S x) (0) --> bot.
 
 [y, x] eq (nat) (S x) (S y) --> eq nat x y.
 
