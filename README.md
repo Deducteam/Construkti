@@ -18,12 +18,12 @@ This tool applies Kuroda's translation to Dedukti proofs written using natural d
 
 - Clone this repository:
 ```
-git clone https://github.com/thomastraversie/construkti/
+git clone https://github.com/Deducteam/Construkti
 ```
 
 - Enter this repository:
 ```
-cd construkti
+cd Construkti
 ```
 
 - Write your proofs only using the connectors, quantifiers, and natural deduction rules presented in `logic.dk`. If you want to translate the Dedukti file `file.dk` such that the concatenation of `logic.dk` and `file.dk` typechecks, run 
