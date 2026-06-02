@@ -383,6 +383,24 @@ thm neg_iff : (p : Prop -> (q : Prop -> (Prf (imp (iff (not (not p)) (not (not q
                 (neg_imp1 q p) 
                 (and_er (imp (not (not p)) (not (not q))) (imp (not (not q)) (not (not p))) pH)))))))).
 
+thm non_contradiction : (Prf (all o (A : (El o) => (not (and A (not A)))))) 
+:= (all_i o 
+    (A : (El o) => (not (and A (not A)))) 
+    (A : Prop => (neg_i (and A (not A)) (pANA : (Prf (and A (not A))) => (imp_e A bot 
+        (imp_i A bot (neg_e A (and_er A (not A) pANA))) 
+        (and_el A (not A) pANA)))))).
+
+thm entailment : (Prf (all o (A : (El o) => (all o (B : (El o) => (imp (and A (not A)) B)))))) 
+:= (all_i o 
+    (A : (El o) => (all o (B : (El o) => (imp (and A (not A)) B)))) 
+    (A : Prop => (all_i o 
+        (B : (El o) => (imp (and A (not A)) B)) 
+        (B : Prop => (imp_i (and A (not A)) B (pANA : (Prf (and A (not A))) => (bot_e 
+            (imp_e A bot 
+                (imp_i A bot (neg_e A (and_er A (not A) pANA))) 
+                (and_el A (not A) pANA)) 
+            B))))))).
+
 
 (; Classical results ;)
 
@@ -483,24 +501,6 @@ thm weak_linearity : (Prf (all o (A : (El o) => (all o (B : (El o) => (or (imp A
 
 thm weak_excluded_middle : (Prf (all o (A : (El o) => (or (not A) (not (not A)))))) 
 := (all_i o (A : (El o) => (or (not A) (not (not A)))) (A : Prop => (pem (not A)))).
-
-thm non_contradiction : (Prf (all o (A : (El o) => (not (and A (not A)))))) 
-:= (all_i o 
-    (A : (El o) => (not (and A (not A)))) 
-    (A : Prop => (neg_i (and A (not A)) (pANA : (Prf (and A (not A))) => (imp_e A bot 
-        (imp_i A bot (neg_e A (and_er A (not A) pANA))) 
-        (and_el A (not A) pANA)))))).
-
-thm entailment : (Prf (all o (A : (El o) => (all o (B : (El o) => (imp (and A (not A)) B)))))) 
-:= (all_i o 
-    (A : (El o) => (all o (B : (El o) => (imp (and A (not A)) B)))) 
-    (A : Prop => (all_i o 
-        (B : (El o) => (imp (and A (not A)) B)) 
-        (B : Prop => (imp_i (and A (not A)) B (pANA : (Prf (and A (not A))) => (bot_e 
-            (imp_e A bot 
-                (imp_i A bot (neg_e A (and_er A (not A) pANA))) 
-                (and_el A (not A) pANA)) 
-            B))))))).
 
 
 (; De Morgan's laws ;)
@@ -1098,7 +1098,7 @@ thm exp_mult_rule : (b : (El nat) -> (n : (El nat) -> (m : (El nat) -> (Prf (eq 
     m)))).
 
 def leq : ((El nat) -> ((El nat) -> Prop)).
-[_0, _1] leq _0 _1 --> (ex nat (p : (El nat) => (eq nat (add _0 p) _1))).
+[x, y] leq x y --> (ex nat (p : (El nat) => (eq nat (add x p) y))).
 
 thm leq_refl : (n : (El nat) -> (Prf (leq n n))) 
 := (n : (El nat) => (ex_i nat (p : (El nat) => (eq nat (add n p) n)) 0 (eq_refl_rule nat n))).

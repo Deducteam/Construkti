@@ -1275,6 +1275,47 @@ thm neg_iff :
              (neg_imp1 q p)
              (and_er_i (imp (not (not p)) (not (not q))) (imp (not (not q)) (not (not p))) pH)))).
 
+thm non_contradiction :
+  Prf (not (not (all o (A:(El o) => not (not (not (and A (not A))))))))
+  :=
+  all_i_i
+    o
+    (A:(El o) => not (and A (not A)))
+    (A:Prop =>
+     neg_i_i
+       (and A (not A))
+       (pANA:(Prf (not (not (and A (not A))))) =>
+        imp_e_i
+          A
+          bot
+          (imp_i_i A bot (neg_e_i A (and_er_i A (not A) pANA)))
+          (and_el_i A (not A) pANA))).
+
+thm entailment :
+  Prf
+    (not
+       (not (all o (A:(El o) => not (not (all o (B:(El o) => not (not (imp (and A (not A)) B)))))))))
+  :=
+  all_i_i
+    o
+    (A:(El o) => all o (B:(El o) => not (not (imp (and A (not A)) B))))
+    (A:Prop =>
+     all_i_i
+       o
+       (B:(El o) => imp (and A (not A)) B)
+       (B:Prop =>
+        imp_i_i
+          (and A (not A))
+          B
+          (pANA:(Prf (not (not (and A (not A))))) =>
+           bot_e_i
+             (imp_e_i
+                A
+                bot
+                (imp_i_i A bot (neg_e_i A (and_er_i A (not A) pANA)))
+                (and_el_i A (not A) pANA))
+             B))).
+
 thm double_neg_elim :
   A:Prop -> Prf (not (not (imp (not (not A)) A)))
   :=
@@ -1476,47 +1517,6 @@ thm weak_excluded_middle :
   Prf (not (not (all o (A:(El o) => not (not (or (not A) (not (not A))))))))
   :=
   all_i_i o (A:(El o) => or (not A) (not (not A))) (A:Prop => pem_i (not A)).
-
-thm non_contradiction :
-  Prf (not (not (all o (A:(El o) => not (not (not (and A (not A))))))))
-  :=
-  all_i_i
-    o
-    (A:(El o) => not (and A (not A)))
-    (A:Prop =>
-     neg_i_i
-       (and A (not A))
-       (pANA:(Prf (not (not (and A (not A))))) =>
-        imp_e_i
-          A
-          bot
-          (imp_i_i A bot (neg_e_i A (and_er_i A (not A) pANA)))
-          (and_el_i A (not A) pANA))).
-
-thm entailment :
-  Prf
-    (not
-       (not (all o (A:(El o) => not (not (all o (B:(El o) => not (not (imp (and A (not A)) B)))))))))
-  :=
-  all_i_i
-    o
-    (A:(El o) => all o (B:(El o) => not (not (imp (and A (not A)) B))))
-    (A:Prop =>
-     all_i_i
-       o
-       (B:(El o) => imp (and A (not A)) B)
-       (B:Prop =>
-        imp_i_i
-          (and A (not A))
-          B
-          (pANA:(Prf (not (not (and A (not A))))) =>
-           bot_e_i
-             (imp_e_i
-                A
-                bot
-                (imp_i_i A bot (neg_e_i A (and_er_i A (not A) pANA)))
-                (and_el_i A (not A) pANA))
-             B))).
 
 thm demorgan_and :
   A:Prop -> B:Prop -> Prf (not (not (iff (not (and A B)) (or (not A) (not B)))))
@@ -3028,7 +3028,7 @@ thm exp_mult_rule :
 
 def leq : (El nat) -> (El nat) -> Prop.
 
-[_1, _0] leq _0 _1 --> ex nat (p:(El nat) => eq nat (add _0 p) _1).
+[y, x] leq x y --> ex nat (p:(El nat) => eq nat (add x p) y).
 
 thm leq_refl :
   n:(El nat) -> Prf (not (not (leq n n)))
